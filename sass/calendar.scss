@@ -1,0 +1,128 @@
+$prefix:'slwy';
+$mainColor:#003b9f;
+$minorColor:#0c80ba;
+$thirdColor:#eb5455;
+$fouthColor:#fce9e9;
+
+.#{$prefix}-calendar{
+    top: 0;
+    left: 0;
+    border-radius: 0;
+    background: #fff;
+    -webkit-box-shadow: 0 0 10px #ccc;
+    box-shadow: 0 0 10px #ccc;
+    padding-bottom: 10px;
+    margin-top: 10px;
+    width: 300px;
+    color: #555;
+    // display: none;
+    .#{$prefix}-calendar-caret{
+        display: inline-block;
+        width: 0;
+        height: 0;
+        vertical-align: middle;
+        border-bottom: 7px solid $mainColor;
+        border-right: 7px solid transparent;
+        border-left: 7px solid transparent;
+        border-top: 0 dotted;
+        -webkit-transform: rotate(360deg);
+        -ms-transform: rotate(360deg);
+        transform: rotate(360deg);
+        position: absolute;
+        top: -7px;
+        left: 6px;
+    }
+    .#{$prefix}-calendar-table{
+        width: 100%;
+        background-color: transparent;
+        empty-cells: show;
+        border-collapse: collapse;
+        border-spacing: 0;
+        td,th{
+            text-align: center;
+            font-weight: 400;
+            cursor: pointer;
+        }
+        th{
+            height: 48px;
+        }
+        td{
+            height: 45px;
+            width: 45px;
+            font-size: 14px;
+        }
+    }
+    .#{$prefix}-calendar-header{
+        background: $mainColor;
+        font-size: 16px;
+        color: #fff;
+    }
+    .#{$prefix}-calendar-title{
+        height: 40px;
+        color: $minorColor;
+    }
+    .#{$prefix}-calendar-day{
+        &.#{$prefix}-canlendar-day-active{
+            color:#fff;
+            position: relative;
+            z-index: 10;
+            &:after{
+                content:'';
+                position: absolute;
+                display: inline-block;
+                border-radius: 100%;
+                border:16px solid $thirdColor;
+                z-index: -1;
+                top:7px;
+                left:6px;
+            }
+            &:before{
+                content:'';
+                border-radius: 100%;
+                position: absolute;
+                display: inline-block;
+                border:21px solid $fouthColor;
+                top:2px;
+                left:1px;
+                z-index: -2;
+            }
+        }
+    }
+    .#{$prefix}-calendar-months,.#{$prefix}-calendar-years{
+        display: none;
+    }
+    .#{$prefix}-calendar-old,.#{$prefix}-calendar-new{
+        color:#ccc!important;
+    }
+    .#{$prefix}-calendar-week{
+        color:$thirdColor
+    }
+    .#{$prefix}-calendar-prev-icon,.#{$prefix}-calendar-next-icon{
+        display: inline-block;
+        border-top:10px solid  transparent;
+        border-bottom:10px solid transparent;
+        position: relative;
+        &:after{
+            content:'';
+            display:inline-block;
+            border-top:10px solid  transparent;
+            border-bottom:10px solid transparent;
+            position: absolute;
+            top:-10px;
+        }
+    }
+    .#{$prefix}-calendar-prev-icon{
+        border-right:10px solid #fff;
+        &:after{
+            border-right:10px solid $mainColor;
+            left:4px;
+        }
+    }
+    .#{$prefix}-calendar-next-icon{
+        border-left:10px solid #fff;
+        &:after{
+            border-left:10px solid $mainColor;
+            right: 4px;
+        }
+    }
+}
