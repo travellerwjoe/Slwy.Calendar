@@ -21,24 +21,27 @@ var SETTING = {
             }
         }
     },
-    getTemplate: function () {
+    getTemplate: function (tplName) {
         var headTemplate = '<thead>' +
             '<tr class="' + this.prefix + '-calendar-header">' +
-            '<th class="' + this.prefix + '-calendar-prev">' +
-            '<i class="' + this.prefix + '-calendar-prev-icon"></i></th>' +
-            '<th colspan="5" class="' + this.prefix + '-calendar-switch">' +
+            '<th colspan="7" class="' + this.prefix + '-calendar-switch">' +
             '<div class="' + this.prefix + '-calendar-select"></div></th>' +
-            '<th class="' + this.prefix + '-calendar-next"><i class="' + this.prefix + '-calendar-next-icon"></i>' +
-            '</th></tr></thead>';
+            '</tr></thead>';
         var contTemplate = '<tbody><tr><td colspan="7"></td></tr></tbody>';
-
-        return '<div class="' + this.prefix + '-calendar ' + this.prefix + '-calendar-dropdown">' +
-            '<div class="' + this.prefix + '-calendar-caret"></div>' +
-            '<div class="' + this.prefix + '-calendar-days">' +
-            '<table class="' + this.prefix + '-calendar-table">' +
+        var tableTemplate = '<table class="' + this.prefix + '-calendar-table">' +
             headTemplate +
             '<tbody></tbody>' +
-            '</table>' +
+            '</table>';
+        var template = '<div class="' + this.prefix + '-calendar">' +
+            '<div class="' + this.prefix + '-calendar-caret"></div>' +
+            '<div class="' + this.prefix + '-calendar-action">' +
+            '<div class="' + this.prefix + '-calendar-prev">' +
+            '<i class="' + this.prefix + '-calendar-prev-icon"></i></div>' +
+            '<div class="' + this.prefix + '-calendar-next">' +
+            '<i class="' + this.prefix + '-calendar-next-icon"></i></div>' +
+            '</div>' +
+            '<div class="' + this.prefix + '-calendar-days">' +
+            // tableTemplate +
             '</div>' +
             '<div class="' + this.prefix + '-calendar-months">' +
             '<table class="' + this.prefix + '-calendar-table">' +
@@ -53,6 +56,13 @@ var SETTING = {
             '</table>' +
             '</div>' +
             '</div>';
+        var tpl = {
+            headTemplate: headTemplate,
+            contTemplate: contTemplate,
+            tableTemplate: tableTemplate,
+            template: template
+        }
+        return tpl[tplName ? (tplName + 'Template') : 'template']
     },
     prefix: 'slwy',
     yearStart: 1990,//年份开始
@@ -87,9 +97,9 @@ var UTILS = {
 
 function Calendar(opts) {
     this.dfts = {
-        locale: 'zh_CN',
-        highlightWeek: true,
-        paneCount: 1,
+        locale: 'zh_CN',//语言时区
+        highlightWeek: true,//是否高亮周末
+        paneCount: 1,//面板数量
         minDate: null,
         maxDate: null,
         onChange: function (date) {
@@ -100,9 +110,12 @@ function Calendar(opts) {
     var template = SETTING.getTemplate();
     this.$calender = $(template).appendTo('body');
     this.$calenderDays = this.$calender.find('.' + SETTING.prefix + '-calendar-days');
+    this.$calendarAction = this.$calender.find('.' + SETTING.prefix + '-calendar-action');
 
     this.now = new Date()
-    this.viewDate = new Date()
+    this.viewDate = new Date() //当前面板显示时间
+    this.activeDate = null //当前选中时间
+    this.curPaneCount = 0 //当前面板数量
     this.init()
 }
 Calendar.prototype.init = function () {
@@ -111,56 +124,66 @@ Calendar.prototype.init = function () {
 }
 
 Calendar.prototype.bind = function () {
-    var _this = this
-    this.$calenderDays.on('click.' + SETTING.prefix + '.Calendar', function (e) {
+    var _this = this,
+        clickEvent = 'click.' + SETTING.prefix + '.Calendar'
+    this.$calenderDays.on(clickEvent, function (e) {
         var $target = $(e.target).closest('span, td, th'),
             activeClassName = SETTING.prefix + '-calendar-day-active',
-            disabledClassName = SETTING.prefix + '-calendar-disabled',
-            prevClassName = SETTING.prefix + '-calendar-prev',
-            nextClassName = SETTING.prefix + '-calendar-next'
+            disabledClassName = SETTING.prefix + '-calendar-disabled'
 
-        if ($target.is('th') && $target.hasClass(prevClassName)) {
-            _this.viewDate.setMonth(_this.viewDate.getMonth() - 1)
-            _this.renderDays()
-        } else if ($target.is('th') && $target.hasClass(nextClassName)) {
-            _this.viewDate.setMonth(_this.viewDate.getMonth() + 1)
-            _this.renderDays()
-        } else if ($target.is('td')) {
+        if ($target.is('td')) {
             if ($target.hasClass(disabledClassName)) {
                 return
             }
-            $target.parents('tbody').find('td').removeClass(activeClassName)
+            _this.$calenderDays.find('td').removeClass(activeClassName)
             $target.addClass(activeClassName)
             _this.opts.onChange()
         }
 
     })
+
+    this.$calendarAction.on(clickEvent, function (e) {
+        var $target = $(e.target).closest('div'),
+            prevClassName = SETTING.prefix + '-calendar-prev',
+            nextClassName = SETTING.prefix + '-calendar-next'
+
+        _this.$calenderDays.html('')
+        _this.curPaneCount = 0
+        if ($target.hasClass(prevClassName)) {
+            _this.viewDate.setMonth(_this.viewDate.getMonth() - _this.opts.paneCount * 2 + 1)
+            _this.renderDays()
+        } else if ($target.hasClass(nextClassName)) {
+            _this.viewDate.setMonth(_this.viewDate.getMonth() + 1)
+            _this.renderDays()
+        }
+    })
 }
 
 
 Calendar.prototype.render = function () {
-    this.renderTitle()
-    this.renderDays(this.now)
+    // this.renderTitle()
+    this.renderDays()
+    this.resetCalendarHeight()
 }
 
-Calendar.prototype.renderTitle = function () {
-    var weekStart = SETTING.weekStart, tr = '<tr>';
-    for (var titleIndex = weekStart; titleIndex < weekStart + 7; titleIndex++) {
-        var className = SETTING.prefix + '-calendar-title ',
-            th
+// Calendar.prototype.renderTitle = function () {
+//     var weekStart = SETTING.weekStart, tr = '<tr>';
+//     for (var titleIndex = weekStart; titleIndex < weekStart + 7; titleIndex++) {
+//         var className = SETTING.prefix + '-calendar-title ',
+//             th
 
-        if (this.opts.highlightWeek && ((titleIndex % 7) === 0 || (titleIndex % 7) === 6)) {
-            className += SETTING.prefix + '-calendar-week'
-        }
+//         if (this.opts.highlightWeek && ((titleIndex % 7) === 0 || (titleIndex % 7) === 6)) {
+//             className += SETTING.prefix + '-calendar-week'
+//         }
 
-        th = '<th class="' + className + '">' +
-            SETTING.locales[this.opts.locale].daysShort[titleIndex % 7]
-        '</th>'
+//         th = '<th class="' + className + '">' +
+//             SETTING.locales[this.opts.locale].daysShort[titleIndex % 7]
+//         '</th>'
 
-        tr += th
-    }
-    this.$calenderDays.find('thead').append(tr)
-}
+//         tr += th
+//     }
+//     this.$calenderDays.find('thead').append(tr)
+// }
 
 Calendar.prototype.renderDays = function () {
     var viewDate = this.viewDate,
@@ -181,6 +204,7 @@ Calendar.prototype.renderDays = function () {
         nextMonthDate,
         minDate,
         maxDate,
+        $table = $(SETTING.getTemplate('table')),
         daysHtml = ""
 
     prevMonthDate.setDate(prevMonthDays)
@@ -193,6 +217,7 @@ Calendar.prototype.renderDays = function () {
     if (this.opts.maxDate) maxDate = new Date(typeof this.opts.maxDate === 'string' ? this.opts.maxDate.replace('-', '/') : this.opts.maxDate)
 
 
+    renderTitle.call(this, $table);
     for (startIndex = 1; prevMonthDate.valueOf() < nextMonthDate.valueOf(); prevMonthDate.setDate(prevMonthDate.getDate() + 1), startIndex++) {
         var prevY = prevMonthDate.getFullYear(),
             prevM = prevMonthDate.getMonth(),
@@ -231,17 +256,49 @@ Calendar.prototype.renderDays = function () {
         }
     }
 
-    this.$calenderDays.find('tbody').html(daysHtml)
+    $table.find('tbody').html(daysHtml)
+    $table.find('.' + SETTING.prefix + '-calendar-select').text(SETTING.locales[this.opts.locale].getYearMonth(viewDate.getFullYear(), viewDate.getMonth()))
+    this.$calenderDays.append($table)
 
-    this.$calenderDays.find('.' + SETTING.prefix + '-calendar-select').text(SETTING.locales[this.opts.locale].getYearMonth(viewDate.getFullYear(), viewDate.getMonth()))
+    this.curPaneCount++
+    if (this.curPaneCount < this.opts.paneCount) {
+        this.viewDate.setMonth(this.viewDate.getMonth() + 1)
+        this.renderDays()
+    }
 
+    function renderTitle(tableEl) {
+        var weekStart = SETTING.weekStart, tr = '<tr>';
+        for (var titleIndex = weekStart; titleIndex < weekStart + 7; titleIndex++) {
+            var className = SETTING.prefix + '-calendar-title ',
+                th
+
+            if (this.opts.highlightWeek && ((titleIndex % 7) === 0 || (titleIndex % 7) === 6)) {
+                className += SETTING.prefix + '-calendar-week'
+            }
+
+            th = '<th class="' + className + '">' +
+                SETTING.locales[this.opts.locale].daysShort[titleIndex % 7]
+            '</th>'
+
+            tr += th
+        }
+        tableEl.find('thead').append(tr)
+    }
 
 }
 
+Calendar.prototype.resetCalendarHeight = function () {
+    var $table = this.$calender.find('table'),
+        tableWidth = $table.width(),
+        tableHeight = $table.height()
+    this.$calender.width(this.opts.paneCount > 3 ? tableWidth * 3 : tableWidth * this.opts.paneCount).height(Math.ceil(this.opts.paneCount / 3) * tableHeight)
+}
+
+
 new Calendar({
     locale: 'zh_CN',
-    paneCount: 2,
+    // paneCount: 6,
     // highlightWeek: false,
-    minDate: '2017-04-10',
+    // minDate: '2017-04-10',
     maxDate: new Date()
 })

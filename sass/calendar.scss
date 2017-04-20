@@ -3,6 +3,10 @@ $mainColor:#003b9f;
 $minorColor:#0c80ba;
 $thirdColor:#eb5455;
 $fouthColor:#fce9e9;
+$headerHeight:50px;
+$thHeight:48px;
+$tdWidth:45px;
+$tdHeight:45px;
 
 .#{$prefix}-calendar{
     top: 0;
@@ -13,8 +17,10 @@ $fouthColor:#fce9e9;
     box-shadow: 0 0 10px #ccc;
     padding-bottom: 10px;
     margin-top: 10px;
-    width: 300px;
+    // width: 300px;
+    // height: 382px;
     color: #555;
+    position: relative;
     // display: none;
     .#{$prefix}-calendar-caret{
         display: inline-block;
@@ -30,25 +36,73 @@ $fouthColor:#fce9e9;
         transform: rotate(360deg);
         position: absolute;
         top: -7px;
-        left: 6px;
+        left: 30px;
+    }
+    .#{$prefix}-calendar-action{
+        position: absolute;
+        width:100%;
+        height: $headerHeight;
+        .#{$prefix}-calendar-prev,.#{$prefix}-calendar-next{
+            position: absolute;
+            height: 100%;
+            width:$tdWidth;
+            text-align: center;
+            line-height: $headerHeight + 10;
+            cursor:pointer;
+        }
+        .#{$prefix}-calendar-prev{
+            
+        }
+        .#{$prefix}-calendar-next{
+            right:0;
+        }
+        .#{$prefix}-calendar-prev-icon,.#{$prefix}-calendar-next-icon{
+            display: inline-block;
+            border-top:10px solid  transparent;
+            border-bottom:10px solid transparent;
+            position: relative;
+            &:after{
+                content:'';
+                display:inline-block;
+                border-top:10px solid  transparent;
+                border-bottom:10px solid transparent;
+                position: absolute;
+                top:-10px;
+            }
+        }
+        .#{$prefix}-calendar-prev-icon{
+            border-right:10px solid #fff;
+            &:after{
+                border-right:10px solid $mainColor;
+                left:4px;
+            }
+        }
+        .#{$prefix}-calendar-next-icon{
+            border-left:10px solid #fff;
+            &:after{
+                border-left:10px solid $mainColor;
+                right: 4px;
+            }
+        }
     }
     .#{$prefix}-calendar-table{
-        width: 100%;
+        // width: 100%;
         background-color: transparent;
         empty-cells: show;
         border-collapse: collapse;
         border-spacing: 0;
+        float:left;  
         td,th{
             text-align: center;
             font-weight: 400;
             cursor: pointer;
         }
         th{
-            height: 48px;
+            height:$thHeight;
         }
         td{
-            height: 45px;
-            width: 45px;
+            height: $tdHeight;
+            width: $tdWidth;
             font-size: 14px;
         }
     }
@@ -66,24 +120,25 @@ $fouthColor:#fce9e9;
             color:#fff!important;
             position: relative;
             z-index: 10;
-            &:after{
+            &:after,&:before{
                 content:'';
                 position: absolute;
                 display: inline-block;
                 border-radius: 100%;
+                top: 0;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                margin:auto;
+                width:0;
+                height: 0;
+            }
+            &:after{
                 border:16px solid $thirdColor;
                 z-index: -1;
-                top:7px;
-                left:6px;
             }
             &:before{
-                content:'';
-                border-radius: 100%;
-                position: absolute;
-                display: inline-block;
                 border:21px solid $fouthColor;
-                top:2px;
-                left:1px;
                 z-index: -2;
             }
         }
@@ -101,32 +156,5 @@ $fouthColor:#fce9e9;
     .#{$prefix}-calendar-week{
         color:$thirdColor
     }
-    .#{$prefix}-calendar-prev-icon,.#{$prefix}-calendar-next-icon{
-        display: inline-block;
-        border-top:10px solid  transparent;
-        border-bottom:10px solid transparent;
-        position: relative;
-        &:after{
-            content:'';
-            display:inline-block;
-            border-top:10px solid  transparent;
-            border-bottom:10px solid transparent;
-            position: absolute;
-            top:-10px;
-        }
-    }
-    .#{$prefix}-calendar-prev-icon{
-        border-right:10px solid #fff;
-        &:after{
-            border-right:10px solid $mainColor;
-            left:4px;
-        }
-    }
-    .#{$prefix}-calendar-next-icon{
-        border-left:10px solid #fff;
-        &:after{
-            border-left:10px solid $mainColor;
-            right: 4px;
-        }
-    }
+    
 }
