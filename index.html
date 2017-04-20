@@ -18,9 +18,19 @@
 </head>
 
 <body>
-    <!--<input type="text" id="date" placeholder="点击展开日历" readonly>-->
+    <input type="text" id="date" placeholder="点击展开日历" onfocus="new SlwyCalendar()" readonly>
     <script src="js/jquery.1.8.3.min.js"></script>
     <script src="js/calendar.js"></script>
+    <script>
+        $('input').SlwyCalendar({
+            locale: 'zh_CN',
+            // paneCount: 12,
+            // highlightWeek: false,
+            // minDate: '2017-04-10',
+            minDate: new Date()
+            // maxDate: new Date()
+        })
+    </script>
 </body>
 
 </html>
