@@ -117,7 +117,7 @@
         }
     }
 
-
+    var calendar;
 
     function Calendar(opts, srcElement) {
         this.dfts = {
@@ -135,12 +135,19 @@
         this.$calender = $(template).appendTo('body');
         this.$calenderDays = this.$calender.find('.' + SETTING.prefix + '-calendar-days');
         this.$calendarAction = this.$calender.find('.' + SETTING.prefix + '-calendar-action');
-        this.$srcElement = $(srcElement)//触发元素
+        this.$srcElement = srcElement && $(srcElement)//触发元素
 
         this.now = new Date()
         this.viewDate = new Date() //当前面板显示时间
         this.activeDate = null //当前选中时间
         this.curPaneCount = 0 //当前面板数量
+
+        //如有触发元素隐藏日历待触发时显示
+        if (this.$srcElement) {
+            this.$calender.addClass(SETTING.prefix + '-calendar-hidden')
+        } else {
+            this.$calender.find('.' + SETTING.prefix + '-calendar-caret').remove()
+        }
         this.init()
     }
     Calendar.prototype.init = function () {
@@ -151,6 +158,23 @@
     Calendar.prototype.bind = function () {
         var _this = this,
             clickEvent = 'click.' + SETTING.prefix + '.Calendar',
+            focusEvent = 'focus.' + SETTING.prefix + '.Calendar',
+            blurEvent = 'blur.' + SETTING.prefix + '.Calendar'
+
+        if (this.$srcElement) {
+            this.$srcElement.on(focusEvent, function (e) {
+                _this.open()
+            })
+            $(document).on(clickEvent, function (e) {
+                var $target = $(e.target)
+
+                if (!$target.is(_this.$srcElement) && !$target.closest('.' + SETTING.prefix + '-calendar').is(_this.$calender)) {
+                    _this.close()
+                }
+            })
+        }
+
+
         this.$calenderDays.on(clickEvent, function (e) {
             var $target = $(e.target).closest('span, td, th'),
                 activeClassName = SETTING.prefix + '-calendar-day-active',
@@ -165,6 +189,8 @@
                 _this.opts.onChange()
             }
 
+        }).on(blurEvent, function (e) {
+            _this.close()
         })
 
         this.$calendarAction.on(clickEvent, function (e) {
@@ -186,29 +212,9 @@
 
 
     Calendar.prototype.render = function () {
-        // this.renderTitle()
         this.renderDays()
-        this.resetCalendarHeight()
+        this.resetCalendarStyle()
     }
-
-    // Calendar.prototype.renderTitle = function () {
-    //     var weekStart = SETTING.weekStart, tr = '<tr>';
-    //     for (var titleIndex = weekStart; titleIndex < weekStart + 7; titleIndex++) {
-    //         var className = SETTING.prefix + '-calendar-title ',
-    //             th
-
-    //         if (this.opts.highlightWeek && ((titleIndex % 7) === 0 || (titleIndex % 7) === 6)) {
-    //             className += SETTING.prefix + '-calendar-week'
-    //         }
-
-    //         th = '<th class="' + className + '">' +
-    //             SETTING.locales[this.opts.locale].daysShort[titleIndex % 7]
-    //         '</th>'
-
-    //         tr += th
-    //     }
-    //     this.$calenderDays.find('thead').append(tr)
-    // }
 
     Calendar.prototype.renderDays = function () {
         var viewDate = this.viewDate,
@@ -311,22 +317,46 @@
 
     }
 
-    Calendar.prototype.resetCalendarHeight = function () {
+    Calendar.prototype.resetCalendarStyle = function () {
         var $table = this.$calender.find('table'),
             tableWidth = $table.width(),
             tableHeight = $table.height()
         this.$calender.width(this.opts.paneCount > 3 ? tableWidth * 3 : tableWidth * this.opts.paneCount).height(Math.ceil(this.opts.paneCount / 3) * tableHeight)
+
+        if (this.$srcElement) {
+            var offset = this.$srcElement.offset(),
+                srcElH = this.$srcElement.outerHeight()
+            this.$calender.css({
+                left: offset.left,
+                top: offset.top + srcElH,
+                position: 'absolute',
+                zIndex: 9999
+            })
+        }
+
+    }
+
+    Calendar.prototype.open = function () {
+        this.$calender.removeClass(SETTING.prefix + '-calendar-hidden')
+    }
+
+    Calendar.prototype.close = function () {
+        this.$calender.addClass(SETTING.prefix + '-calendar-hidden')
     }
 
 
     $.fn.SlwyCalendar = function (options) {
-        new Calendar(options, $(this))
+        var calendar = new Calendar(options, $(this))
         return $(this)
     }
 
     return function (options, srcElement) {
-        srcElement = srcElement || event.srcElement || document.getElementsByTagName('body')[0]
-        new Calendar(options, srcElement)
+        if (calendar) calendar.open()
+        if (typeof options === 'string') srcElement = options, options = {}
+        if (typeof options === 'undefined') options = {}
+        srcElement = srcElement || event && event.srcElement
+        calendar = new Calendar(options, srcElement)
+        event && event.srcElement && calendar.open()
     }
-    
+
 }))

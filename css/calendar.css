@@ -11,7 +11,11 @@
   color: #555;
   position: relative;
 }
-/* line 25, ../sass/calendar.scss */
+/* line 26, ../sass/calendar.scss */
+.slwy-calendar.slwy-calendar-hidden {
+  visibility: hidden;
+}
+/* line 29, ../sass/calendar.scss */
 .slwy-calendar .slwy-calendar-caret {
   display: inline-block;
   width: 0;
@@ -28,13 +32,13 @@
   top: -7px;
   left: 30px;
 }
-/* line 41, ../sass/calendar.scss */
+/* line 45, ../sass/calendar.scss */
 .slwy-calendar .slwy-calendar-action {
   position: absolute;
   width: 100%;
   height: 50px;
 }
-/* line 45, ../sass/calendar.scss */
+/* line 49, ../sass/calendar.scss */
 .slwy-calendar .slwy-calendar-action .slwy-calendar-prev, .slwy-calendar .slwy-calendar-action .slwy-calendar-next {
   position: absolute;
   height: 100%;
@@ -43,18 +47,18 @@
   line-height: 60px;
   cursor: pointer;
 }
-/* line 56, ../sass/calendar.scss */
+/* line 60, ../sass/calendar.scss */
 .slwy-calendar .slwy-calendar-action .slwy-calendar-next {
   right: 0;
 }
-/* line 59, ../sass/calendar.scss */
+/* line 63, ../sass/calendar.scss */
 .slwy-calendar .slwy-calendar-action .slwy-calendar-prev-icon, .slwy-calendar .slwy-calendar-action .slwy-calendar-next-icon {
   display: inline-block;
   border-top: 10px solid  transparent;
   border-bottom: 10px solid transparent;
   position: relative;
 }
-/* line 64, ../sass/calendar.scss */
+/* line 68, ../sass/calendar.scss */
 .slwy-calendar .slwy-calendar-action .slwy-calendar-prev-icon:after, .slwy-calendar .slwy-calendar-action .slwy-calendar-next-icon:after {
   content: '';
   display: inline-block;
@@ -63,25 +67,25 @@
   position: absolute;
   top: -10px;
 }
-/* line 73, ../sass/calendar.scss */
+/* line 77, ../sass/calendar.scss */
 .slwy-calendar .slwy-calendar-action .slwy-calendar-prev-icon {
   border-right: 10px solid #fff;
 }
-/* line 75, ../sass/calendar.scss */
+/* line 79, ../sass/calendar.scss */
 .slwy-calendar .slwy-calendar-action .slwy-calendar-prev-icon:after {
   border-right: 10px solid #003b9f;
   left: 4px;
 }
-/* line 80, ../sass/calendar.scss */
+/* line 84, ../sass/calendar.scss */
 .slwy-calendar .slwy-calendar-action .slwy-calendar-next-icon {
   border-left: 10px solid #fff;
 }
-/* line 82, ../sass/calendar.scss */
+/* line 86, ../sass/calendar.scss */
 .slwy-calendar .slwy-calendar-action .slwy-calendar-next-icon:after {
   border-left: 10px solid #003b9f;
   right: 4px;
 }
-/* line 88, ../sass/calendar.scss */
+/* line 92, ../sass/calendar.scss */
 .slwy-calendar .slwy-calendar-table {
   background-color: transparent;
   empty-cells: show;
@@ -89,40 +93,40 @@
   border-spacing: 0;
   float: left;
 }
-/* line 95, ../sass/calendar.scss */
+/* line 99, ../sass/calendar.scss */
 .slwy-calendar .slwy-calendar-table td, .slwy-calendar .slwy-calendar-table th {
   text-align: center;
   font-weight: 400;
   cursor: pointer;
 }
-/* line 100, ../sass/calendar.scss */
+/* line 104, ../sass/calendar.scss */
 .slwy-calendar .slwy-calendar-table th {
   height: 48px;
 }
-/* line 103, ../sass/calendar.scss */
+/* line 107, ../sass/calendar.scss */
 .slwy-calendar .slwy-calendar-table td {
   height: 45px;
   width: 45px;
   font-size: 14px;
 }
-/* line 109, ../sass/calendar.scss */
+/* line 113, ../sass/calendar.scss */
 .slwy-calendar .slwy-calendar-header {
   background: #003b9f;
   font-size: 16px;
   color: #fff;
 }
-/* line 114, ../sass/calendar.scss */
+/* line 118, ../sass/calendar.scss */
 .slwy-calendar .slwy-calendar-title {
   height: 40px;
   color: #0c80ba;
 }
-/* line 119, ../sass/calendar.scss */
+/* line 123, ../sass/calendar.scss */
 .slwy-calendar .slwy-calendar-day.slwy-calendar-day-active {
   color: #fff !important;
   position: relative;
   z-index: 10;
 }
-/* line 123, ../sass/calendar.scss */
+/* line 127, ../sass/calendar.scss */
 .slwy-calendar .slwy-calendar-day.slwy-calendar-day-active:after, .slwy-calendar .slwy-calendar-day.slwy-calendar-day-active:before {
   content: '';
   position: absolute;
@@ -136,30 +140,30 @@
   width: 0;
   height: 0;
 }
-/* line 136, ../sass/calendar.scss */
+/* line 140, ../sass/calendar.scss */
 .slwy-calendar .slwy-calendar-day.slwy-calendar-day-active:after {
   border: 16px solid #eb5455;
   z-index: -1;
 }
-/* line 140, ../sass/calendar.scss */
+/* line 144, ../sass/calendar.scss */
 .slwy-calendar .slwy-calendar-day.slwy-calendar-day-active:before {
   border: 21px solid #fce9e9;
   z-index: -2;
 }
-/* line 145, ../sass/calendar.scss */
+/* line 149, ../sass/calendar.scss */
 .slwy-calendar .slwy-calendar-day.slwy-calendar-disabled {
   color: #ccc !important;
   cursor: not-allowed;
 }
-/* line 150, ../sass/calendar.scss */
+/* line 154, ../sass/calendar.scss */
 .slwy-calendar .slwy-calendar-months, .slwy-calendar .slwy-calendar-years {
   display: none;
 }
-/* line 153, ../sass/calendar.scss */
+/* line 157, ../sass/calendar.scss */
 .slwy-calendar .slwy-calendar-old, .slwy-calendar .slwy-calendar-new {
   color: #6ac7f5 !important;
 }
-/* line 156, ../sass/calendar.scss */
+/* line 160, ../sass/calendar.scss */
 .slwy-calendar .slwy-calendar-week {
   color: #eb5455;
 }

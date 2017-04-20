@@ -21,7 +21,11 @@ $tdHeight:45px;
     // height: 382px;
     color: #555;
     position: relative;
+    // visibility: hidden;
     // display: none;
+    &.#{$prefix}-calendar-hidden{
+        visibility: hidden
+    }
     .#{$prefix}-calendar-caret{
         display: inline-block;
         width: 0;
