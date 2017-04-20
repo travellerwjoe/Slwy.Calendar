@@ -64,13 +64,13 @@
   color: #0c80ba;
 }
 /* line 65, ../sass/calendar.scss */
-.slwy-calendar .slwy-calendar-day.slwy-canlendar-day-active {
-  color: #fff;
+.slwy-calendar .slwy-calendar-day.slwy-calendar-day-active {
+  color: #fff !important;
   position: relative;
   z-index: 10;
 }
 /* line 69, ../sass/calendar.scss */
-.slwy-calendar .slwy-calendar-day.slwy-canlendar-day-active:after {
+.slwy-calendar .slwy-calendar-day.slwy-calendar-day-active:after {
   content: '';
   position: absolute;
   display: inline-block;
@@ -81,7 +81,7 @@
   left: 6px;
 }
 /* line 79, ../sass/calendar.scss */
-.slwy-calendar .slwy-calendar-day.slwy-canlendar-day-active:before {
+.slwy-calendar .slwy-calendar-day.slwy-calendar-day-active:before {
   content: '';
   border-radius: 100%;
   position: absolute;
@@ -91,26 +91,31 @@
   left: 1px;
   z-index: -2;
 }
-/* line 91, ../sass/calendar.scss */
+/* line 90, ../sass/calendar.scss */
+.slwy-calendar .slwy-calendar-day.slwy-calendar-disabled {
+  color: #ccc !important;
+  cursor: not-allowed;
+}
+/* line 95, ../sass/calendar.scss */
 .slwy-calendar .slwy-calendar-months, .slwy-calendar .slwy-calendar-years {
   display: none;
 }
-/* line 94, ../sass/calendar.scss */
+/* line 98, ../sass/calendar.scss */
 .slwy-calendar .slwy-calendar-old, .slwy-calendar .slwy-calendar-new {
-  color: #ccc !important;
+  color: #6ac7f5 !important;
 }
-/* line 97, ../sass/calendar.scss */
+/* line 101, ../sass/calendar.scss */
 .slwy-calendar .slwy-calendar-week {
   color: #eb5455;
 }
-/* line 100, ../sass/calendar.scss */
+/* line 104, ../sass/calendar.scss */
 .slwy-calendar .slwy-calendar-prev-icon, .slwy-calendar .slwy-calendar-next-icon {
   display: inline-block;
   border-top: 10px solid  transparent;
   border-bottom: 10px solid transparent;
   position: relative;
 }
-/* line 105, ../sass/calendar.scss */
+/* line 109, ../sass/calendar.scss */
 .slwy-calendar .slwy-calendar-prev-icon:after, .slwy-calendar .slwy-calendar-next-icon:after {
   content: '';
   display: inline-block;
@@ -119,20 +124,20 @@
   position: absolute;
   top: -10px;
 }
-/* line 114, ../sass/calendar.scss */
+/* line 118, ../sass/calendar.scss */
 .slwy-calendar .slwy-calendar-prev-icon {
   border-right: 10px solid #fff;
 }
-/* line 116, ../sass/calendar.scss */
+/* line 120, ../sass/calendar.scss */
 .slwy-calendar .slwy-calendar-prev-icon:after {
   border-right: 10px solid #003b9f;
   left: 4px;
 }
-/* line 121, ../sass/calendar.scss */
+/* line 125, ../sass/calendar.scss */
 .slwy-calendar .slwy-calendar-next-icon {
   border-left: 10px solid #fff;
 }
-/* line 123, ../sass/calendar.scss */
+/* line 127, ../sass/calendar.scss */
 .slwy-calendar .slwy-calendar-next-icon:after {
   border-left: 10px solid #003b9f;
   right: 4px;

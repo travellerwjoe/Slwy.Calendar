@@ -62,8 +62,8 @@ $fouthColor:#fce9e9;
         color: $minorColor;
     }
     .#{$prefix}-calendar-day{
-        &.#{$prefix}-canlendar-day-active{
-            color:#fff;
+        &.#{$prefix}-calendar-day-active{
+            color:#fff!important;
             position: relative;
             z-index: 10;
             &:after{
@@ -87,12 +87,16 @@ $fouthColor:#fce9e9;
                 z-index: -2;
             }
         }
+        &.#{$prefix}-calendar-disabled{
+            color:#ccc!important;
+            cursor: not-allowed;
+        }
     }
     .#{$prefix}-calendar-months,.#{$prefix}-calendar-years{
         display: none;
     }
     .#{$prefix}-calendar-old,.#{$prefix}-calendar-new{
-        color:#ccc!important;
+        color:lighten($minorColor,30%)!important;
     }
     .#{$prefix}-calendar-week{
         color:$thirdColor

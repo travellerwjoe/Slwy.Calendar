@@ -90,6 +90,8 @@ function Calendar(opts) {
         locale: 'zh_CN',
         highlightWeek: true,
         paneCount: 1,
+        minDate: null,
+        maxDate: null,
         onChange: function (date) {
 
         }
@@ -111,19 +113,25 @@ Calendar.prototype.init = function () {
 Calendar.prototype.bind = function () {
     var _this = this
     this.$calenderDays.on('click.' + SETTING.prefix + '.Calendar', function (e) {
-        var $target = $(e.target),
-            activeClassName= SETTING.prefix +'-canlendar-day-active'
+        var $target = $(e.target).closest('span, td, th'),
+            activeClassName = SETTING.prefix + '-calendar-day-active',
+            disabledClassName = SETTING.prefix + '-calendar-disabled',
+            prevClassName = SETTING.prefix + '-calendar-prev',
+            nextClassName = SETTING.prefix + '-calendar-next'
 
-        if ($target.is('i') && $target.hasClass(SETTING.prefix + '-calendar-prev-icon')) {
+        if ($target.is('th') && $target.hasClass(prevClassName)) {
             _this.viewDate.setMonth(_this.viewDate.getMonth() - 1)
             _this.renderDays()
-        } else if ($target.is('i') && $target.hasClass(SETTING.prefix + '-calendar-next-icon')) {
+        } else if ($target.is('th') && $target.hasClass(nextClassName)) {
             _this.viewDate.setMonth(_this.viewDate.getMonth() + 1)
             _this.renderDays()
         } else if ($target.is('td')) {
+            if ($target.hasClass(disabledClassName)) {
+                return
+            }
             $target.parents('tbody').find('td').removeClass(activeClassName)
             $target.addClass(activeClassName)
-            _this.onChange()
+            _this.opts.onChange()
         }
 
     })
@@ -171,6 +179,8 @@ Calendar.prototype.renderDays = function () {
         prevMonthDays = UTILS.getDaysOfYearMonth(prevMonthDateY, prevMonthDateM),
         //下月
         nextMonthDate,
+        minDate,
+        maxDate,
         daysHtml = ""
 
     prevMonthDate.setDate(prevMonthDays)
@@ -178,6 +188,9 @@ Calendar.prototype.renderDays = function () {
 
     nextMonthDate = new Date(prevMonthDate)
     nextMonthDate.setDate(nextMonthDate.getDate() + 42)
+
+    if (this.opts.minDate) minDate = new Date(typeof this.opts.minDate === 'string' ? this.opts.minDate.replace('-', '/') : this.opts.minDate)
+    if (this.opts.maxDate) maxDate = new Date(typeof this.opts.maxDate === 'string' ? this.opts.maxDate.replace('-', '/') : this.opts.maxDate)
 
 
     for (startIndex = 1; prevMonthDate.valueOf() < nextMonthDate.valueOf(); prevMonthDate.setDate(prevMonthDate.getDate() + 1), startIndex++) {
@@ -191,6 +204,12 @@ Calendar.prototype.renderDays = function () {
             className += SETTING.prefix + '-calendar-old '
         } else if (prevY > viewYear || (prevY === viewYear && prevM > viewMonth)) {
             className += SETTING.prefix + '-calendar-new '
+        }
+
+        if (minDate && prevMonthDate.valueOf() < minDate.valueOf()) {
+            className += SETTING.prefix + '-calendar-disabled '
+        } else if (maxDate && prevMonthDate.valueOf() > maxDate.valueOf()) {
+            className += SETTING.prefix + '-calendar-disabled '
         }
 
         if ((prevW === 0 || prevW === 6) && this.opts.highlightWeek) {
@@ -222,5 +241,7 @@ Calendar.prototype.renderDays = function () {
 new Calendar({
     locale: 'zh_CN',
     paneCount: 2,
-    // highlightWeek: false
+    // highlightWeek: false,
+    minDate: '2017-04-10',
+    maxDate: new Date()
 })
