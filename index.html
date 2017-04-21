@@ -18,14 +18,42 @@
 </head>
 
 <body>
+    <img src="./left.png" id="img" alt="">
     <input type="text" id="date" placeholder="点击展开日历" readonly>
     <input type="text" id="date2" placeholder="点击展开日历" readonly>
     <script src="js/jquery.1.8.3.min.js"></script>
     <script src="js/calendar.js"></script>
     <script>
+/*        function getBase64Image(img) {
+            var canvas = document.createElement("canvas");
+            canvas.width = img.width;
+            canvas.height = img.height;
+
+            var ctx = canvas.getContext("2d");
+            ctx.drawImage(img, 0, 0, img.width, img.height);
+
+            var dataURL = canvas.toDataURL("image/png");
+            return dataURL
+
+            // return dataURL.replace("data:image/png;base64,", "");
+        }
+
+
+        function main() {
+            var img = document.createElement('img');
+            img.src = './left.png';
+            img.onload = function () {
+                var data = getBase64Image(img);
+                console.log(data);
+            }
+
+            document.body.appendChild(img);
+        }
+
+        main()*/
         $('#date2').SlwyCalendar({
             locale: 'zh_CN',
-            // paneCount: 12,
+            paneCount: 12,
             // highlightWeek: false,
             // minDate: '2017-04-10',
             minDate: new Date()
@@ -37,7 +65,7 @@
         // new SlwyCalendar()
 
         SlwyCalendar({
-            minDate:'2017-04-05'
+            minDate: '2017-04-05'
         }, '#date')
     </script>
 </body>

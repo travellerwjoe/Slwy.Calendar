@@ -35,8 +35,10 @@
         getTemplate: function (tplName) {
             var headTemplate = '<thead>' +
                 '<tr class="' + this.prefix + '-calendar-header">' +
-                '<th colspan="7" class="' + this.prefix + '-calendar-switch">' +
+                '<th></th>'+
+                '<th colspan="5" class="' + this.prefix + '-calendar-switch">' +
                 '<div class="' + this.prefix + '-calendar-select"></div></th>' +
+                '<th></th>'+
                 '</tr></thead>';
             var contTemplate = '<tbody><tr><td colspan="7"></td></tr></tbody>';
             var tableTemplate = '<table class="' + this.prefix + '-calendar-table">' +
@@ -337,11 +339,13 @@
     }
 
     Calendar.prototype.open = function () {
-        this.$calender.removeClass(SETTING.prefix + '-calendar-hidden')
+        // this.$calender.removeClass(SETTING.prefix + '-calendar-hidden')
+        this.$calender.removeClass(SETTING.prefix + '-calendar-hidden').show()
     }
 
     Calendar.prototype.close = function () {
-        this.$calender.addClass(SETTING.prefix + '-calendar-hidden')
+        // this.$calender.addClass(SETTING.prefix + '-calendar-hidden')
+        this.$calender.hide()
     }
 
 
