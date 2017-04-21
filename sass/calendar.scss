@@ -1,4 +1,4 @@
-$prefix:'slwy';
+$prefix:'Slwy';
 $mainColor:#003b9f;
 $minorColor:#0c80ba;
 $thirdColor:#eb5455;
@@ -46,7 +46,7 @@ $tdHeight:45px;
     .#{$prefix}-calendar-action{
         .#{$prefix}-calendar-prev,.#{$prefix}-calendar-next{
             position: absolute;
-            height: 100%;
+            height: $headerHeight;
             width:$tdWidth;
             text-align: center;
             line-height: $headerHeight + 10;

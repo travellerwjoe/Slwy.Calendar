@@ -18,13 +18,12 @@
 </head>
 
 <body>
-    <img src="./left.png" id="img" alt="">
     <input type="text" id="date" placeholder="点击展开日历" readonly>
     <input type="text" id="date2" placeholder="点击展开日历" readonly>
     <script src="js/jquery.1.8.3.min.js"></script>
     <script src="js/calendar.js"></script>
     <script>
-/*        function getBase64Image(img) {
+        /*        function getBase64Image(img) {
             var canvas = document.createElement("canvas");
             canvas.width = img.width;
             canvas.height = img.height;
@@ -50,23 +49,60 @@
             document.body.appendChild(img);
         }
 
+
         main()*/
-        $('#date2').SlwyCalendar({
+
+        var date1 = $('#date').SlwyCalendar({
             locale: 'zh_CN',
             paneCount: 12,
+            // dateFormat:'yyyy/MM/dd',
             // highlightWeek: false,
             // minDate: '2017-04-10',
-            minDate: new Date()
+            minDate: new Date(),
+            // onChangeDate: function (date, value) {
+            //     /*console.log(date, value)
+            //     console.log(date2,this)*/
+            //     return true
+            // }
             // maxDate: new Date()
         })
+        /*        }).on('changeDate', function (e) {
+                    debugger
+                    e.close()
+                    // console.log(e.date, e.value)
+                    // console.log(e.returnValue,window.event.returnValue)
+                    // window.event.returnValue = false
+                    return false
+                })*/
+        var date2 = $('#date2').SlwyCalendar({
+            locale: 'zh_CN',
+            paneCount: 1,
+            // dateFormat:'yyyy/MM/dd',
+            // highlightWeek: false,
+            // minDate: '2017-04-10',
+            minDate: new Date(),
+            // onChangeDate: function (date, value) {
+            //     /*console.log(date, value)
+            //     console.log(date2,this)*/
+            //     return true
+            // }
+            // maxDate: new Date()
+        })
+        /*}).on('changeDate', function (e) {
+            e.close()
+            // console.log(e.date, e.value)
+            // console.log(e.returnValue,window.event.returnValue)
+            // window.event.returnValue = false
+            return false
+        })*/
 
         // new SlwyCalendar('#date')
 
         // new SlwyCalendar()
 
-        SlwyCalendar({
+        /*SlwyCalendar({
             minDate: '2017-04-05'
-        }, '#date')
+        }, '#date')*/
     </script>
 </body>
 

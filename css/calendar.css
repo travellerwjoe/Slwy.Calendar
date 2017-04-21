@@ -1,5 +1,5 @@
 /* line 12, ../sass/calendar.scss */
-.slwy-calendar {
+.Slwy-calendar {
   top: 0;
   left: 0;
   border-radius: 0;
@@ -12,11 +12,11 @@
   position: relative;
 }
 /* line 27, ../sass/calendar.scss */
-.slwy-calendar.slwy-calendar-hidden {
+.Slwy-calendar.Slwy-calendar-hidden {
   visibility: hidden;
 }
 /* line 30, ../sass/calendar.scss */
-.slwy-calendar .slwy-calendar-caret {
+.Slwy-calendar .Slwy-calendar-caret {
   display: inline-block;
   width: 0;
   height: 0;
@@ -33,8 +33,8 @@
   left: 30px;
 }
 /* line 46, ../sass/calendar.scss */
-.slwy-calendar .slwy-calendar-action {
-  /*.slwy-calendar-prev-icon,.slwy-calendar-next-icon{
+.Slwy-calendar .Slwy-calendar-action {
+  /*.Slwy-calendar-prev-icon,.Slwy-calendar-next-icon{
       display: inline-block;
       border-top:10px solid  transparent;
       border-bottom:10px solid transparent;
@@ -48,14 +48,14 @@
           top:-10px;
       }
   }
-  .slwy-calendar-prev-icon{
+  .Slwy-calendar-prev-icon{
       border-right:10px solid #fff;
       &:after{
           border-right:10px solid $mainColor;
           left:4px;
       }
   }
-  .slwy-calendar-next-icon{
+  .Slwy-calendar-next-icon{
       border-left:10px solid #fff;
       &:after{
           border-left:10px solid $mainColor;
@@ -64,9 +64,9 @@
   }*/
 }
 /* line 47, ../sass/calendar.scss */
-.slwy-calendar .slwy-calendar-action .slwy-calendar-prev, .slwy-calendar .slwy-calendar-action .slwy-calendar-next {
+.Slwy-calendar .Slwy-calendar-action .Slwy-calendar-prev, .Slwy-calendar .Slwy-calendar-action .Slwy-calendar-next {
   position: absolute;
-  height: 100%;
+  height: 50px;
   width: 45px;
   text-align: center;
   line-height: 60px;
@@ -75,29 +75,29 @@
   transition: background-color .3s ease-out;
 }
 /* line 56, ../sass/calendar.scss */
-.slwy-calendar .slwy-calendar-action .slwy-calendar-prev:hover, .slwy-calendar .slwy-calendar-action .slwy-calendar-next:hover {
+.Slwy-calendar .Slwy-calendar-action .Slwy-calendar-prev:hover, .Slwy-calendar .Slwy-calendar-action .Slwy-calendar-next:hover {
   background-color: rgba(255, 255, 255, 0.2);
 }
 /* line 63, ../sass/calendar.scss */
-.slwy-calendar .slwy-calendar-action .slwy-calendar-next {
+.Slwy-calendar .Slwy-calendar-action .Slwy-calendar-next {
   right: 0;
 }
 /* line 66, ../sass/calendar.scss */
-.slwy-calendar .slwy-calendar-action .slwy-calendar-prev-icon, .slwy-calendar .slwy-calendar-action .slwy-calendar-next-icon {
+.Slwy-calendar .Slwy-calendar-action .Slwy-calendar-prev-icon, .Slwy-calendar .Slwy-calendar-action .Slwy-calendar-next-icon {
   width: 24px;
   height: 24px;
   display: inline-block;
 }
 /* line 71, ../sass/calendar.scss */
-.slwy-calendar .slwy-calendar-action .slwy-calendar-prev-icon {
+.Slwy-calendar .Slwy-calendar-action .Slwy-calendar-prev-icon {
   background: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAAyUlEQVRIS7XWiw3CMAwE0LsJYBNgAmADVmUCGKHdBCYwOilIVWl+dsgA9+TGjkv8+TCSb2Z7AAcAM8nXVpYbMLMjgAcAIXeSt2HAKly5qkDgz+muYCP8DeBCcgoDveECmyvwhDcD3vAmIBJeBaLhRWBEeA14Ajin1iu2Yuk1yHaRmS0BPQPXXK97AU2mkF0KcCHFOUj3EEKqgxZFqoA+TwRpAiJIM+BFugAP0g1kkInkKbwPlgGrix+7Mr9QWvoaSFUwdum3/o18AF7rfhku5fQOAAAAAElFTkSuQmCC") no-repeat;
 }
 /* line 74, ../sass/calendar.scss */
-.slwy-calendar .slwy-calendar-action .slwy-calendar-next-icon {
+.Slwy-calendar .Slwy-calendar-action .Slwy-calendar-next-icon {
   background: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAAy0lEQVRIS7XV0Q3CMAwE0LsJYBM6QpmAVdkAmIB2k7JAjCz1gw9iO06a30r34ijpEQcv1vJF5AxgArCQ3LL7qAKllDvJG4APgJnkkkEs4E1SJ9CVRqwjmkTkQVKPKo1UAU0UkW7EBEYgLtCLhIAeJAxkkSYggzQDFeRFcv73ENMAgCeA0x46DtC38RsuIhvJa+1X0jRBa7hOFwYy4WEgGx4CesJdoDfcBEaEm0ApRavysj8s8ypaTedWpnfPvRr1Sl8nWA8pfW9n0e9fhw+zGUg0efoAAAAASUVORK5CYII=") no-repeat;
 }
 /* line 107, ../sass/calendar.scss */
-.slwy-calendar .slwy-calendar-table {
+.Slwy-calendar .Slwy-calendar-table {
   background-color: transparent;
   empty-cells: show;
   border-collapse: collapse;
@@ -105,40 +105,40 @@
   float: left;
 }
 /* line 114, ../sass/calendar.scss */
-.slwy-calendar .slwy-calendar-table td, .slwy-calendar .slwy-calendar-table th {
+.Slwy-calendar .Slwy-calendar-table td, .Slwy-calendar .Slwy-calendar-table th {
   text-align: center;
   font-weight: 400;
   cursor: pointer;
 }
 /* line 119, ../sass/calendar.scss */
-.slwy-calendar .slwy-calendar-table th {
+.Slwy-calendar .Slwy-calendar-table th {
   height: 48px;
 }
 /* line 122, ../sass/calendar.scss */
-.slwy-calendar .slwy-calendar-table td {
+.Slwy-calendar .Slwy-calendar-table td {
   height: 45px;
   width: 45px;
   font-size: 14px;
 }
 /* line 128, ../sass/calendar.scss */
-.slwy-calendar .slwy-calendar-header {
+.Slwy-calendar .Slwy-calendar-header {
   background: #003b9f;
   font-size: 16px;
   color: #fff;
 }
 /* line 133, ../sass/calendar.scss */
-.slwy-calendar .slwy-calendar-title {
+.Slwy-calendar .Slwy-calendar-title {
   height: 40px;
   color: #0c80ba;
 }
 /* line 138, ../sass/calendar.scss */
-.slwy-calendar .slwy-calendar-day.slwy-calendar-day-active {
+.Slwy-calendar .Slwy-calendar-day.Slwy-calendar-day-active {
   color: #fff !important;
   position: relative;
   z-index: 10;
 }
 /* line 142, ../sass/calendar.scss */
-.slwy-calendar .slwy-calendar-day.slwy-calendar-day-active:after, .slwy-calendar .slwy-calendar-day.slwy-calendar-day-active:before {
+.Slwy-calendar .Slwy-calendar-day.Slwy-calendar-day-active:after, .Slwy-calendar .Slwy-calendar-day.Slwy-calendar-day-active:before {
   content: '';
   position: absolute;
   display: inline-block;
@@ -152,34 +152,34 @@
   height: 0;
 }
 /* line 155, ../sass/calendar.scss */
-.slwy-calendar .slwy-calendar-day.slwy-calendar-day-active:after {
+.Slwy-calendar .Slwy-calendar-day.Slwy-calendar-day-active:after {
   border: 16px solid #eb5455;
   z-index: -1;
 }
 /* line 159, ../sass/calendar.scss */
-.slwy-calendar .slwy-calendar-day.slwy-calendar-day-active:before {
+.Slwy-calendar .Slwy-calendar-day.Slwy-calendar-day-active:before {
   border: 21px solid #fce9e9;
   z-index: -2;
 }
 /* line 164, ../sass/calendar.scss */
-.slwy-calendar .slwy-calendar-day.slwy-calendar-disabled {
+.Slwy-calendar .Slwy-calendar-day.Slwy-calendar-disabled {
   color: #ccc !important;
   cursor: not-allowed;
 }
 /* line 169, ../sass/calendar.scss */
-.slwy-calendar .slwy-calendar-months, .slwy-calendar .slwy-calendar-years {
+.Slwy-calendar .Slwy-calendar-months, .Slwy-calendar .Slwy-calendar-years {
   display: none;
 }
 /* line 172, ../sass/calendar.scss */
-.slwy-calendar .slwy-calendar-old, .slwy-calendar .slwy-calendar-new {
+.Slwy-calendar .Slwy-calendar-old, .Slwy-calendar .Slwy-calendar-new {
   color: #6ac7f5 !important;
 }
 /* line 175, ../sass/calendar.scss */
-.slwy-calendar .slwy-calendar-week {
+.Slwy-calendar .Slwy-calendar-week {
   color: #eb5455;
 }
 /* line 178, ../sass/calendar.scss */
-.slwy-calendar .slwy-calendar-select {
+.Slwy-calendar .Slwy-calendar-select {
   height: 34px;
   line-height: 34px;
   text-align: center;
@@ -188,6 +188,6 @@
   cursor: pointer;
 }
 /* line 185, ../sass/calendar.scss */
-.slwy-calendar .slwy-calendar-select:hover {
+.Slwy-calendar .Slwy-calendar-select:hover {
   background-color: rgba(255, 255, 255, 0.2);
 }

@@ -35,10 +35,10 @@
         getTemplate: function (tplName) {
             var headTemplate = '<thead>' +
                 '<tr class="' + this.prefix + '-calendar-header">' +
-                '<th></th>'+
+                '<th></th>' +
                 '<th colspan="5" class="' + this.prefix + '-calendar-switch">' +
                 '<div class="' + this.prefix + '-calendar-select"></div></th>' +
-                '<th></th>'+
+                '<th></th>' +
                 '</tr></thead>';
             var contTemplate = '<tbody><tr><td colspan="7"></td></tr></tbody>';
             var tableTemplate = '<table class="' + this.prefix + '-calendar-table">' +
@@ -77,7 +77,7 @@
             }
             return tpl[tplName ? (tplName + 'Template') : 'template']
         },
-        prefix: 'slwy',
+        prefix: 'Slwy',
         yearStart: 1990,//年份开始
         yearEnd: 2050,//年份结束
         weekStart: 0,//一周开始星期，0星期日
@@ -116,10 +116,40 @@
             date.setSeconds(0)
             date.setMilliseconds(0)
             return date
+        },
+        formatDateTime: function (date, fmt) {
+            if (typeof (date) == 'string') date = date.replace(/-/g, '/');
+            date = new Date(date);
+            var o = {
+                "M+": date.getMonth() + 1, //月份 
+                "d+": date.getDate(), //日 
+                "h+": date.getHours(), //小时 
+                "m+": date.getMinutes(), //分 
+                "s+": date.getSeconds(), //秒 
+                "q+": Math.floor((date.getMonth() + 3) / 3), //季度 
+                "S": date.getMilliseconds(), //毫秒
+                "D+": formatDay(date.getDay())  //周几
+            };
+            function formatDay(num) {
+                switch (num) {
+                    case 0: return '周日';
+                    case 1: return '周一';
+                    case 2: return '周二';
+                    case 3: return '周三';
+                    case 4: return '周四';
+                    case 5: return '周五';
+                    case 6: return '周六';
+                }
+            }
+            if (/(y+)/.test(fmt)) {
+                fmt = fmt.replace(RegExp.$1, (date.getFullYear() + "").substr(4 - RegExp.$1.length));
+            }
+            for (var k in o) {
+                if (new RegExp("(" + k + ")").test(fmt)) fmt = fmt.replace(RegExp.$1, (RegExp.$1.length == 1) ? (o[k]) : (("00" + o[k]).substr(("" + o[k]).length)));
+            }
+            return fmt;
         }
     }
-
-    var calendar;
 
     function Calendar(opts, srcElement) {
         this.dfts = {
@@ -128,9 +158,8 @@
             paneCount: 1,//面板数量
             minDate: null,
             maxDate: null,
-            onChange: function (date) {
-
-            }
+            dateFormat: 'yyyy-MM-dd',
+            onChangeDate: null
         }
         this.opts = $.extend(true, this.dfts, opts)
         var template = SETTING.getTemplate();
@@ -167,6 +196,7 @@
             this.$srcElement.on(focusEvent, function (e) {
                 _this.open()
             })
+
             $(document).on(clickEvent, function (e) {
                 var $target = $(e.target)
 
@@ -188,12 +218,36 @@
                 }
                 _this.$calenderDays.find('td').removeClass(activeClassName)
                 $target.addClass(activeClassName)
-                _this.opts.onChange()
-            }
 
-        }).on(blurEvent, function (e) {
-            _this.close()
+                var date = new Date($target.attr(SETTING.prefix + '-calendar-date')),
+                    formatedDate = UTILS.formatDateTime(date, _this.opts.dateFormat),
+                    cbRes
+
+                if (new Date(_this.activeDate).valueOf() === date.valueOf()) {
+                    return
+                }
+
+                _this.activeDate = date
+                typeof _this.opts.onChangeDate === 'function' && _this.opts.onChangeDate.call(_this, _this.activeDate, formatedDate)
+
+                if (_this.$srcElement) {
+                    var res = _this.$srcElement.trigger({
+                        type: 'changeDate',
+                        date: _this.activeDate,
+                        value: formatedDate,
+                        close: _this.close.bind(_this),
+                        open: _this.open.bind(_this)
+                    })
+                    //如果onChangeDate回调未声明并且未在jqueryDom对象上绑定onChangeDate事件执行默认操作
+                    if (typeof _this.opts.onChangeDate !== 'function' && typeof $._data(_this.$srcElement[0], 'events').changeDate === 'undefined') {
+                        _this.$srcElement.val(formatedDate)
+                        _this.close()
+                    }
+
+                }
+            }
         })
+
 
         this.$calendarAction.on(clickEvent, function (e) {
             var $target = $(e.target).closest('div'),
@@ -253,8 +307,10 @@
         for (startIndex = 1; prevMonthDate.valueOf() < nextMonthDate.valueOf(); prevMonthDate.setDate(prevMonthDate.getDate() + 1), startIndex++) {
             var prevY = prevMonthDate.getFullYear(),
                 prevM = prevMonthDate.getMonth(),
+                prevD = prevMonthDate.getDate(),
                 prevW = prevMonthDate.getDay(),
                 className = SETTING.prefix + '-calendar-day ',
+                calendarDateAttr = SETTING.prefix + '-calendar-date="' + prevY + '/' + (prevM + 1) + '/' + prevD + '"',
                 td
 
             if (prevY < viewYear || (prevY === viewYear && prevM < viewMonth)) {
@@ -277,8 +333,8 @@
                 daysHtml += '<tr>'
             }
 
-            td = '<td class="' + className + '">' +
-                (UTILS.isSameDay(prevMonthDate, nowDate) ? SETTING.locales[this.opts.locale].today : prevMonthDate.getDate()) +
+            td = '<td class="' + className + '" ' + calendarDateAttr + '>' +
+                (UTILS.isSameDay(prevMonthDate, nowDate) ? SETTING.locales[this.opts.locale].today : prevD) +
                 '</td>'
 
             daysHtml += td
@@ -339,28 +395,36 @@
     }
 
     Calendar.prototype.open = function () {
-        // this.$calender.removeClass(SETTING.prefix + '-calendar-hidden')
         this.$calender.removeClass(SETTING.prefix + '-calendar-hidden').show()
     }
 
     Calendar.prototype.close = function () {
-        // this.$calender.addClass(SETTING.prefix + '-calendar-hidden')
         this.$calender.hide()
     }
 
 
+    /*function SlwyCalendar(options, srcElement) {
+        if (calendar) {
+            this.open()
+        }
+        if (typeof options === 'string') srcElement = options, options = {}
+        if (typeof options === 'undefined') options = {}
+        srcElement = srcElement || event && event.srcElement
+        var calendar = new Calendar(options, srcElement)
+        event && event.srcElement && this.open()
+    }*/
+
+
+
     $.fn.SlwyCalendar = function (options) {
-        var calendar = new Calendar(options, $(this))
+        new Calendar(options, $(this))
         return $(this)
     }
 
     return function (options, srcElement) {
-        if (calendar) calendar.open()
         if (typeof options === 'string') srcElement = options, options = {}
         if (typeof options === 'undefined') options = {}
-        srcElement = srcElement || event && event.srcElement
-        calendar = new Calendar(options, srcElement)
-        event && event.srcElement && calendar.open()
+        new Calendar(options, srcElement)
     }
 
 }))
