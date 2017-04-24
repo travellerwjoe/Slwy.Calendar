@@ -114,7 +114,6 @@ $tdHeight:45px;
         td,th{
             text-align: center;
             font-weight: 400;
-            cursor: pointer;
         }
         th{
             height:$thHeight;
@@ -123,6 +122,9 @@ $tdHeight:45px;
             height: $tdHeight;
             width: $tdWidth;
             font-size: 14px;
+            // &:empty{
+            //     height: 0;
+            // }
         }
     }
     .#{$prefix}-calendar-header{
@@ -135,6 +137,7 @@ $tdHeight:45px;
         color: $minorColor;
     }
     .#{$prefix}-calendar-day{
+        cursor: pointer;
         &.#{$prefix}-calendar-day-active{
             color:#fff!important;
             position: relative;

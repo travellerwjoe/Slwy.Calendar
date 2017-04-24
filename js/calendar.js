@@ -166,6 +166,7 @@
         this.dfts = {
             locale: 'zh_CN',//语言时区
             highlightWeek: true,//是否高亮周末
+            onlyThisMonth: false,//每个面板只显示本月
             paneCount: 1,//面板数量
             minDate: null,
             maxDate: null,
@@ -239,7 +240,7 @@
                 activeClassName = SETTING.prefix + '-calendar-day-active',
                 disabledClassName = SETTING.prefix + '-calendar-disabled'
 
-            if ($target.is('td')) {
+            if ($target.is('td') && $target.hasClass('Slwy-calendar-day')) {
                 if ($target.hasClass(disabledClassName)) {
                     return
                 }
@@ -320,7 +321,9 @@
             minDate,
             maxDate,
             $table = $(SETTING.getTemplate('table')),
-            daysHtml = ""
+            prevMonthDateCount = nextMonthDateCount = 0,
+            daysHtml = "",
+            tr = ''
 
         prevMonthDate.setDate(prevMonthDays)
         prevMonthDate.setDate(prevMonthDays - (prevMonthDate.getDay() - SETTING.weekStart + 7) % 7)
@@ -339,12 +342,17 @@
                 prevW = prevMonthDate.getDay(),
                 className = SETTING.prefix + '-calendar-day ',
                 calendarDateAttr = SETTING.prefix + '-calendar-date="' + prevY + '/' + (prevM + 1) + '/' + prevD + '"',
+                isShow = true,
                 td
 
             if (prevY < viewYear || (prevY === viewYear && prevM < viewMonth)) {
+                if (this.opts.onlyThisMonth) isShow = false
                 className += SETTING.prefix + '-calendar-old '
+                prevMonthDateCount++
             } else if (prevY > viewYear || (prevY === viewYear && prevM > viewMonth)) {
+                if (this.opts.onlyThisMonth) isShow = false
                 className += SETTING.prefix + '-calendar-new '
+                nextMonthDateCount++
             }
 
             if (minDate && prevMonthDate.valueOf() < minDate.valueOf()) {
@@ -362,17 +370,23 @@
             }
 
             if (startIndex % 7 === 1) {
-                daysHtml += '<tr>'
+                tr += '<tr>'
             }
 
-            td = '<td class="' + className + '" ' + calendarDateAttr + '>' +
+            td = isShow ? '<td class="' + className + '" ' + calendarDateAttr + '>' +
                 (UTILS.isSameDay(prevMonthDate, nowDate) ? SETTING.locales[this.opts.locale].today : prevD) +
-                '</td>'
+                '</td>' : '<td></td>'
 
-            daysHtml += td
+            tr += td
 
             if (startIndex % 7 === 0) {
-                daysHtml += '</tr>'
+                tr += '</tr>'
+                if (this.opts.onlyThisMonth && (prevMonthDateCount === 7 || nextMonthDateCount === 7)) {
+                    tr = tr.replace(/<tr>/, '<tr style="display:none"')
+                }
+                prevMonthDateCount = nextMonthDateCount = 0
+                daysHtml += tr
+                tr = ''
             }
         }
 
@@ -411,7 +425,9 @@
         var $table = this.$calender.find('table'),
             tableWidth = $table.width(),
             tableHeight = $table.height()
-        this.$calender.width(this.opts.paneCount > 3 ? tableWidth * 3 : tableWidth * this.opts.paneCount).height(Math.ceil(this.opts.paneCount / 3) * tableHeight)
+        this.$calender
+            .width(this.opts.paneCount > 3 ? tableWidth * 3 : tableWidth * this.opts.paneCount)
+        // .height(Math.ceil(this.opts.paneCount / 3) * tableHeight)
 
         if (this.$srcElement) {
             var offset = this.$srcElement.offset(),
