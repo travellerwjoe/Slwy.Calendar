@@ -84,14 +84,25 @@
     }
 
     var UTILS = {
-        //获取日期月份第一天的星期
-        /*getDayWeekOfMonthFirstDay: function (date) {
-            date = new Date(date)
-            var dateYear = date.getFullYear(),
-                dateMonth = date.getMonth(),
-                firstDayDate = new Date(dateYear, dateMonth);
-            return firstDayDate.getDay();
-        }*/
+        //是否是页面中存在的jquery input对象
+        isJqueryInput: function (selector) {
+            return $(selector).is('input')
+        },
+        //指定元素是否上是否存在指定命名空间的事件
+        isEventOnNamespace(el, event, namespace) {
+            var flag = false,
+                events = $._data(el[0], 'events')[event]
+            el = $(el)
+            if (!events) {
+                return flag
+            }
+            $.each(events, function (index, event) {
+                if (typeof event.namespace !== 'undefined' && event.namespace === namespace) {
+                    flag = true
+                }
+            })
+            return flag
+        },
         //是否闰年
         isLeapYear: function (year) {
             return (((year % 4 === 0) && (year % 100 !== 0)) || (year % 400 === 0));
@@ -170,7 +181,7 @@
 
         this.now = new Date()
         this.viewDate = new Date() //当前面板显示时间
-        this.activeDate = null //当前选中时间
+        this.activeDate = this.$srcElement ? UTILS.getValidDate(this.$srcElement.val()) : null //当前选中时间
         this.curPaneCount = 0 //当前面板数量
 
         //如有触发元素隐藏日历待触发时显示
@@ -190,7 +201,8 @@
         var _this = this,
             clickEvent = 'click.' + SETTING.prefix + '.Calendar',
             focusEvent = 'focus.' + SETTING.prefix + '.Calendar',
-            blurEvent = 'blur.' + SETTING.prefix + '.Calendar'
+            blurEvent = 'blur.' + SETTING.prefix + '.Calendar',
+            changeDateEvent = 'changeDate.' + SETTING.prefix + '.Calendar'
 
         if (this.$srcElement) {
             this.$srcElement.on(focusEvent, function (e) {
@@ -206,6 +218,21 @@
             })
         }
 
+        $.each(['minDate', 'maxDate'], function (index, date) {
+            if (_this.opts[date] && UTILS.isJqueryInput(_this.opts[date])) {
+                var $date = $(_this.opts[date])
+                $date.on(changeDateEvent, function (e) {
+                    if (e.namespace !== 'Calendar.' + SETTING.prefix) return
+                    _this.opts[date] = e.value
+                    _this.viewDate = new Date()
+                    _this.activeDate = _this.$srcElement ? UTILS.getValidDate(_this.$srcElement.val()) : null
+                    _this.curPaneCount = 0
+                    _this.$calenderDays.html('')
+                    _this.renderDays()
+
+                })
+            }
+        })
 
         this.$calenderDays.on(clickEvent, function (e) {
             var $target = $(e.target).closest('span, td, th'),
@@ -231,15 +258,17 @@
                 typeof _this.opts.onChangeDate === 'function' && _this.opts.onChangeDate.call(_this, _this.activeDate, formatedDate)
 
                 if (_this.$srcElement) {
-                    var res = _this.$srcElement.trigger({
-                        type: 'changeDate',
-                        date: _this.activeDate,
-                        value: formatedDate,
-                        close: _this.close.bind(_this),
-                        open: _this.open.bind(_this)
+                    $.each(['changeDate', changeDateEvent], function (index, item) {
+                        _this.$srcElement.trigger({
+                            type: item,
+                            date: _this.activeDate,
+                            value: formatedDate,
+                            close: _this.close.bind(_this),
+                            open: _this.open.bind(_this)
+                        })
                     })
-                    //如果onChangeDate回调未声明并且未在jqueryDom对象上绑定onChangeDate事件执行默认操作
-                    if (typeof _this.opts.onChangeDate !== 'function' && typeof $._data(_this.$srcElement[0], 'events').changeDate === 'undefined') {
+                    //如果onChangeDate回调未声明并且未在jqueryDom对象上绑定无命名空间的onChangeDate事件执行默认操作
+                    if (typeof _this.opts.onChangeDate !== 'function' && !UTILS.isEventOnNamespace(_this.$srcElement, 'changeDate', '')) {
                         _this.$srcElement.val(formatedDate)
                         _this.close()
                     }
@@ -265,7 +294,6 @@
             }
         })
     }
-
 
     Calendar.prototype.render = function () {
         this.renderDays()
@@ -300,8 +328,8 @@
         nextMonthDate = new Date(prevMonthDate)
         nextMonthDate.setDate(nextMonthDate.getDate() + 42)
 
-        if (this.opts.minDate) minDate = UTILS.getValidDate(this.opts.minDate)
-        if (this.opts.maxDate) maxDate = UTILS.getValidDate(this.opts.maxDate)
+        if (this.opts.minDate) minDate = UTILS.isJqueryInput(this.opts.minDate) ? UTILS.getValidDate($(this.opts.minDate).val()) : UTILS.getValidDate(this.opts.minDate)
+        if (this.opts.maxDate) maxDate = UTILS.isJqueryInput(this.opts.maxDate) ? UTILS.getValidDate($(this.opts.maxDate).val()) : UTILS.getValidDate(this.opts.maxDate)
 
         renderTitle.call(this, $table);
         for (startIndex = 1; prevMonthDate.valueOf() < nextMonthDate.valueOf(); prevMonthDate.setDate(prevMonthDate.getDate() + 1), startIndex++) {
@@ -326,7 +354,11 @@
             }
 
             if ((prevW === 0 || prevW === 6) && this.opts.highlightWeek) {
-                className += SETTING.prefix + '-calendar-week'
+                className += SETTING.prefix + '-calendar-week '
+            }
+
+            if (this.activeDate && (prevMonthDate.valueOf() === this.activeDate.valueOf())) {
+                className += SETTING.prefix + '-calendar-day-active '
             }
 
             if (startIndex % 7 === 1) {
@@ -401,20 +433,6 @@
     Calendar.prototype.close = function () {
         this.$calender.hide()
     }
-
-
-    /*function SlwyCalendar(options, srcElement) {
-        if (calendar) {
-            this.open()
-        }
-        if (typeof options === 'string') srcElement = options, options = {}
-        if (typeof options === 'undefined') options = {}
-        srcElement = srcElement || event && event.srcElement
-        var calendar = new Calendar(options, srcElement)
-        event && event.srcElement && this.open()
-    }*/
-
-
 
     $.fn.SlwyCalendar = function (options) {
         new Calendar(options, $(this))

@@ -54,11 +54,12 @@
 
         var date1 = $('#date').SlwyCalendar({
             locale: 'zh_CN',
-            paneCount: 12,
+            paneCount: 2,
             // dateFormat:'yyyy/MM/dd',
             // highlightWeek: false,
             // minDate: '2017-04-10',
             minDate: new Date(),
+            maxDate: $('#date2')
             // onChangeDate: function (date, value) {
             //     /*console.log(date, value)
             //     console.log(date2,this)*/
@@ -80,7 +81,8 @@
             // dateFormat:'yyyy/MM/dd',
             // highlightWeek: false,
             // minDate: '2017-04-10',
-            minDate: new Date(),
+            minDate: '#date',
+            maxDate: '2017-5-30'
             // onChangeDate: function (date, value) {
             //     /*console.log(date, value)
             //     console.log(date2,this)*/
@@ -95,6 +97,7 @@
             // window.event.returnValue = false
             return false
         })*/
+
 
         // new SlwyCalendar('#date')
 
