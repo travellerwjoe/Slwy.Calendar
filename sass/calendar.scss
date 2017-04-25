@@ -183,9 +183,7 @@ $tdHeight:45px;
             width:100%;
 
         }
-    }
-    .#{$prefix}-calendar-months{
-        .#{$prefix}-calendar-month{
+        .#{$prefix}-calendar-month,.#{$prefix}-calendar-year{
             display: block;
             width: $tdWidth * 2.422;
             height: 40px;
@@ -219,7 +217,8 @@ $tdHeight:45px;
         font-size: 13px;
     }
     .#{$prefix}-calendar-active{
-        background-color: #eee
+        background-color: #eee;
+        color:$mainColor!important;
     }
     
 }

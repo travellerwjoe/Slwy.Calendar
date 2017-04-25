@@ -238,6 +238,7 @@
         this.$calender = $(template).appendTo('body')
         this.$calenderDays = this.$calender.find('.' + SETTING.prefix + '-calendar-days')
         this.$calenderMonths = this.$calender.find('.' + SETTING.prefix + '-calendar-months')
+        this.$calenderYears = this.$calender.find('.' + SETTING.prefix + '-calendar-years')
         this.$calendarAction = this.$calender.find('.' + SETTING.prefix + '-calendar-action')
         this.$srcElement = srcElement && $(srcElement)//触发元素
 
@@ -359,7 +360,7 @@
                     pos = $target.attr(SETTING.prefix + '-calendar-date')
                 }
 
-                _this.$calenderMonths.find('span').removeClass(activeClassName)
+                $target.parent().find('span').removeClass(activeClassName)
                 $target.addClass(activeClassName)
 
                 _this.viewDate[setFunc].call(_this.viewDate, pos)
@@ -398,6 +399,7 @@
     Calendar.prototype.render = function () {
         this.renderDays()
         this.renderMonths()
+        this.renderYears()
     }
 
     Calendar.prototype.renderDays = function () {
@@ -533,6 +535,30 @@
         this.$calenderMonths.find('tbody td').first().html(html)
         this.$calenderMonths.find('.' + SETTING.prefix + '-calendar-select').text(viewDate.getFullYear())
 
+    }
+
+    Calendar.prototype.renderYears = function () {
+        var viewDate = this.viewDate,
+            className = SETTING.prefix + '-calendar-year',
+            viewYear = viewDate.getFullYear(),
+            activeYear = this.activeDate.getFullYear(),
+            startYear = parseInt(viewYear / 10) * 10,
+            html = ''
+
+        for (var i = -1; i <= 10; i++) {
+            var clsName = className,
+                year = startYear + i,
+                attr = SETTING.prefix + '-calendar-date="' + year + '"'
+            i === -1 && (clsName += ' ' + SETTING.prefix + '-calendar-old')
+            i === 10 && (clsName += ' ' + SETTING.prefix + '-calendar-new')
+            year === activeYear && (clsName += ' ' + SETTING.prefix + '-calendar-active')
+            html += '<span class="' + clsName + '" ' + attr + '>' +
+                year +
+                '</span>'
+        }
+
+        this.$calenderYears.find('tbody td').first().html(html)
+        this.$calenderYears.find('.' + SETTING.prefix + '-calendar-select').text(startYear + '-' + (startYear + 9))
     }
 
     Calendar.prototype.showMode = function (level) {

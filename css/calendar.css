@@ -187,8 +187,8 @@
 .Slwy-calendar .Slwy-calendar-months table, .Slwy-calendar .Slwy-calendar-years table {
   width: 100%;
 }
-/* line 188, ../sass/calendar.scss */
-.Slwy-calendar .Slwy-calendar-months .Slwy-calendar-month {
+/* line 186, ../sass/calendar.scss */
+.Slwy-calendar .Slwy-calendar-months .Slwy-calendar-month, .Slwy-calendar .Slwy-calendar-months .Slwy-calendar-year, .Slwy-calendar .Slwy-calendar-years .Slwy-calendar-month, .Slwy-calendar .Slwy-calendar-years .Slwy-calendar-year {
   display: block;
   width: 108.99px;
   height: 40px;
@@ -196,19 +196,19 @@
   float: left;
   cursor: pointer;
 }
-/* line 195, ../sass/calendar.scss */
-.Slwy-calendar .Slwy-calendar-months .Slwy-calendar-month:hover {
+/* line 193, ../sass/calendar.scss */
+.Slwy-calendar .Slwy-calendar-months .Slwy-calendar-month:hover, .Slwy-calendar .Slwy-calendar-months .Slwy-calendar-year:hover, .Slwy-calendar .Slwy-calendar-years .Slwy-calendar-month:hover, .Slwy-calendar .Slwy-calendar-years .Slwy-calendar-year:hover {
   background-color: #eee;
 }
-/* line 201, ../sass/calendar.scss */
+/* line 199, ../sass/calendar.scss */
 .Slwy-calendar .Slwy-calendar-old, .Slwy-calendar .Slwy-calendar-new {
   color: #6ac7f5 !important;
 }
-/* line 204, ../sass/calendar.scss */
+/* line 202, ../sass/calendar.scss */
 .Slwy-calendar .Slwy-calendar-week {
   color: #eb5455;
 }
-/* line 207, ../sass/calendar.scss */
+/* line 205, ../sass/calendar.scss */
 .Slwy-calendar .Slwy-calendar-select {
   height: 34px;
   line-height: 34px;
@@ -217,15 +217,16 @@
   transition: background-color .3s ease-out;
   cursor: pointer;
 }
-/* line 214, ../sass/calendar.scss */
+/* line 212, ../sass/calendar.scss */
 .Slwy-calendar .Slwy-calendar-select:hover {
   background-color: rgba(255, 255, 255, 0.2);
 }
-/* line 218, ../sass/calendar.scss */
+/* line 216, ../sass/calendar.scss */
 .Slwy-calendar .Slwy-calendar-lunar {
   font-size: 13px;
 }
-/* line 221, ../sass/calendar.scss */
+/* line 219, ../sass/calendar.scss */
 .Slwy-calendar .Slwy-calendar-active {
   background-color: #eee;
+  color: #003b9f !important;
 }
