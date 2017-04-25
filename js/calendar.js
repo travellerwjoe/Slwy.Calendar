@@ -110,6 +110,27 @@
             "1224": "小年"
         },
         mainFestival: ['元旦', '除夕', '春节', '元宵', '情人节', '清明', '劳动节', '端午', '儿童节', '七夕', '国庆节', '中秋', '重阳', '圣诞节'],
+        modesName: ['days', 'months', 'years'],
+        modes: [
+            {
+                className: 'days',
+                navFnc: 'Month',
+                navStep: 1,
+                level: 0
+            },
+            {
+                className: 'months',
+                navFnc: 'FullYear',
+                navStep: 1,
+                level: 1
+            },
+            {
+                className: 'years',
+                navFnc: 'FullYear',
+                navStep: 10,
+                level: 2
+            }
+        ],
         prefix: 'Slwy',
         yearStart: 1990,//年份开始
         yearEnd: 2050,//年份结束
@@ -208,13 +229,16 @@
             minDate: null,
             maxDate: null,
             dateFormat: 'yyyy-MM-dd',
-            onChangeDate: null
+            onChangeDate: null,
+            viewMode: 'days',
+            minViewMode: 'days'
         }
         this.opts = $.extend(true, this.dfts, opts)
-        var template = SETTING.getTemplate();
-        this.$calender = $(template).appendTo('body');
-        this.$calenderDays = this.$calender.find('.' + SETTING.prefix + '-calendar-days');
-        this.$calendarAction = this.$calender.find('.' + SETTING.prefix + '-calendar-action');
+        var template = SETTING.getTemplate()
+        this.$calender = $(template).appendTo('body')
+        this.$calenderDays = this.$calender.find('.' + SETTING.prefix + '-calendar-days')
+        this.$calenderMonths = this.$calender.find('.' + SETTING.prefix + '-calendar-months')
+        this.$calendarAction = this.$calender.find('.' + SETTING.prefix + '-calendar-action')
         this.$srcElement = srcElement && $(srcElement)//触发元素
 
         this.now = new Date()
@@ -223,6 +247,8 @@
         this.curPaneCount = 0 //当前面板数量
         this.Lunar = Lunar
         this.mainFestival = $.isArray(this.opts.mainFestival) && this.opts.mainFestival.length && this.opts.mainFestival || SETTING.mainFestival
+        this.viewMode = SETTING.modesName.indexOf(this.opts.viewMode) >= 0 ? SETTING.modesName.indexOf(this.opts.viewMode) : 0
+        this.minViewMode = SETTING.modesName.indexOf(this.opts.minViewMode) >= 0 ? SETTING.modesName.indexOf(this.opts.minViewMode) : 0
 
         //如有触发元素隐藏日历待触发时显示
         if (this.$srcElement) {
@@ -235,6 +261,7 @@
     Calendar.prototype.init = function () {
         this.bind()
         this.render()
+        this.resetCalendarStyle()
     }
 
     Calendar.prototype.bind = function () {
@@ -274,17 +301,20 @@
             }
         })
 
-        this.$calenderDays.on(clickEvent, function (e) {
+        this.$calender.on(clickEvent, function (e) {
             var $target = $(e.target).closest('span, td, th'),
-                activeClassName = SETTING.prefix + '-calendar-day-active',
+                activeClassName = SETTING.prefix + '-calendar-active',
+                activeDayClassName = SETTING.prefix + '-calendar-day-active',
                 disabledClassName = SETTING.prefix + '-calendar-disabled'
 
-            if ($target.is('td') && $target.hasClass('Slwy-calendar-day')) {
+            if ($target.is('th') && $target.hasClass(SETTING.prefix + '-calendar-switch')) {
+                _this.showMode(1)
+            } else if ($target.is('td') && $target.hasClass(SETTING.prefix + '-calendar-day')) {
                 if ($target.hasClass(disabledClassName)) {
                     return
                 }
-                _this.$calenderDays.find('td').removeClass(activeClassName)
-                $target.addClass(activeClassName)
+                _this.$calenderDays.find('td').removeClass(activeDayClassName)
+                $target.addClass(activeDayClassName)
 
                 var date = new Date($target.attr(SETTING.prefix + '-calendar-date')),
                     formatedDate = UTILS.formatDateTime(date, _this.opts.dateFormat),
@@ -314,6 +344,28 @@
                     }
 
                 }
+            } else if ($target.is('span')) {
+                var curMode = SETTING.modes[_this.viewMode],
+                    setFunc,
+                    renderFunc,
+                    pos = 0
+                if (_this.viewMode === 1) {
+                    setFunc = 'setMonth'
+                    pos = $target.index()
+                    renderFunc = 'renderDays'
+                } else if (_this.viewMode === 2) {
+                    setFunc = 'setFullYear'
+                    renderFunc = 'renderMonths'
+                    pos = $target.attr(SETTING.prefix + '-calendar-date')
+                }
+
+                _this.$calenderMonths.find('span').removeClass(activeClassName)
+                $target.addClass(activeClassName)
+
+                _this.viewDate[setFunc].call(_this.viewDate, pos)
+                _this.showMode(-1)
+                _this.$calenderDays.html('')
+                _this[renderFunc].call(_this)
             }
         })
 
@@ -321,23 +373,31 @@
         this.$calendarAction.on(clickEvent, function (e) {
             var $target = $(e.target).closest('div'),
                 prevClassName = SETTING.prefix + '-calendar-prev',
-                nextClassName = SETTING.prefix + '-calendar-next'
+                nextClassName = SETTING.prefix + '-calendar-next',
+                curMode = SETTING.modes[_this.viewMode],
+                setFunc = 'set' + curMode.navFnc,
+                getFunc = 'get' + curMode.navFnc,
+                navStep = curMode.navStep
+
 
             _this.$calenderDays.html('')
             _this.curPaneCount = 0
             if ($target.hasClass(prevClassName)) {
-                _this.viewDate.setMonth(_this.viewDate.getMonth() - _this.opts.paneCount * 2 + 1)
-                _this.renderDays()
+                var prevStep = this.viewMode === 0 ? _this.opts.paneCount * 2 + navStep : navStep
+                _this.viewDate[setFunc].call(_this.viewDate, _this.viewDate[getFunc].call(_this.viewDate) - prevStep)
+                _this.render()
             } else if ($target.hasClass(nextClassName)) {
-                _this.viewDate.setMonth(_this.viewDate.getMonth() + 1)
-                _this.renderDays()
+                var nextStep = navStep
+                _this.viewDate[setFunc].call(_this.viewDate, _this.viewDate[getFunc].call(_this.viewDate) + nextStep)
+                _this.render()
             }
+
         })
     }
 
     Calendar.prototype.render = function () {
         this.renderDays()
-        this.resetCalendarStyle()
+        this.renderMonths()
     }
 
     Calendar.prototype.renderDays = function () {
@@ -459,6 +519,31 @@
         }
 
     }
+
+    Calendar.prototype.renderMonths = function () {
+        var viewDate = this.viewDate,
+            className = SETTING.prefix + '-calendar-month',
+            html = ''
+
+        for (var i = 0; i < 12; i++) {
+            html += '<span class="' + className + '">' +
+                SETTING.locales[this.opts.locale].months[i] +
+                '</span>'
+        }
+        this.$calenderMonths.find('tbody td').first().html(html)
+        this.$calenderMonths.find('.' + SETTING.prefix + '-calendar-select').text(viewDate.getFullYear())
+
+    }
+
+    Calendar.prototype.showMode = function (level) {
+        if (level) {
+            this.viewMode = Math.max(this.minViewMode,
+                Math.min(2, this.viewMode + level));
+        }
+
+        this.$calender.find('>div').hide().
+            filter('.' + SETTING.prefix + '-calendar-' + SETTING.modes[this.viewMode].className).show();
+    };
 
     Calendar.prototype.getDay = function (loopDate, nowDate) {
         var str = '',

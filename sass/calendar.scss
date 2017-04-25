@@ -28,7 +28,7 @@ $tdHeight:45px;
         visibility: hidden
     }
     .#{$prefix}-calendar-caret{
-        display: inline-block;
+        display: inline-block!important;
         width: 0;
         height: 0;
         vertical-align: middle;
@@ -44,6 +44,7 @@ $tdHeight:45px;
         left: 30px;
     }
     .#{$prefix}-calendar-action{
+        display: block!important;
         .#{$prefix}-calendar-prev,.#{$prefix}-calendar-next{
             position: absolute;
             height: $headerHeight;
@@ -117,11 +118,18 @@ $tdHeight:45px;
         }
         th{
             height:$thHeight;
+            width:$tdHeight;
         }
         td{
             height: $tdHeight;
             width: $tdWidth;
             font-size: 14px;
+            &.#{$prefix}-calendar-day:hover{
+                background-color:#eee
+            }
+            &.#{$prefix}-calendar-disabled:hover{
+                background-color: #fff;
+            }
             // &:empty{
             //     height: 0;
             // }
@@ -171,7 +179,25 @@ $tdHeight:45px;
     }
     .#{$prefix}-calendar-months,.#{$prefix}-calendar-years{
         display: none;
+        table{
+            width:100%;
+
+        }
     }
+    .#{$prefix}-calendar-months{
+        .#{$prefix}-calendar-month{
+            display: block;
+            width: $tdWidth * 2.422;
+            height: 40px;
+            line-height: 40px;
+            float: left;
+            cursor: pointer;
+            &:hover{
+                background-color:#eee
+            }
+        }
+    }
+    
     .#{$prefix}-calendar-old,.#{$prefix}-calendar-new{
         color:lighten($minorColor,30%)!important;
     }
@@ -191,6 +217,9 @@ $tdHeight:45px;
     }
     .#{$prefix}-calendar-lunar{
         font-size: 13px;
+    }
+    .#{$prefix}-calendar-active{
+        background-color: #eee
     }
     
 }
