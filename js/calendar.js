@@ -114,18 +114,21 @@
         modes: [
             {
                 className: 'days',
+                name: 'Days',
                 navFnc: 'Month',
                 navStep: 1,
                 level: 0
             },
             {
                 className: 'months',
+                name: 'Months',
                 navFnc: 'FullYear',
                 navStep: 1,
                 level: 1
             },
             {
                 className: 'years',
+                name: 'Years',
                 navFnc: 'FullYear',
                 navStep: 10,
                 level: 2
@@ -217,7 +220,7 @@
     }
 
     function Calendar(opts, srcElement) {
-        this.dfts = {
+        var dfts = {
             locale: 'zh_CN',//语言时区  
             highlightWeek: true,//是否高亮周末
             onlyThisMonth: false,//每个面板只显示本月
@@ -233,7 +236,7 @@
             viewMode: 'days',
             minViewMode: 'days'
         }
-        this.opts = $.extend(true, this.dfts, opts)
+        this.opts = $.extend(true, dfts, opts)
         var template = SETTING.getTemplate()
         this.$calender = $(template).appendTo('body')
         this.$calenderDays = this.$calender.find('.' + SETTING.prefix + '-calendar-days')
@@ -245,6 +248,7 @@
         this.now = new Date()
         this.viewDate = new Date() //当前面板显示时间
         this.activeDate = this.$srcElement ? UTILS.getValidDate(this.$srcElement.val()) : null //当前选中时间
+        this.paneCount = this.opts.paneCount
         this.curPaneCount = 0 //当前面板数量
         this.Lunar = Lunar
         this.mainFestival = $.isArray(this.opts.mainFestival) && this.opts.mainFestival.length && this.opts.mainFestival || SETTING.mainFestival
@@ -261,8 +265,7 @@
     }
     Calendar.prototype.init = function () {
         this.bind()
-        this.render()
-        this.resetCalendarStyle()
+        this.show()
     }
 
     Calendar.prototype.bind = function () {
@@ -294,10 +297,7 @@
                     _this.opts[date] = e.value
                     _this.viewDate = new Date()
                     _this.activeDate = _this.$srcElement ? UTILS.getValidDate(_this.$srcElement.val()) : null
-                    _this.curPaneCount = 0
-                    _this.$calenderDays.html('')
                     _this.renderDays()
-
                 })
             }
         })
@@ -309,24 +309,26 @@
                 disabledClassName = SETTING.prefix + '-calendar-disabled'
 
             if ($target.is('th') && $target.hasClass(SETTING.prefix + '-calendar-switch')) {
-                _this.showMode(1)
+                _this.show(1)
             } else if ($target.is('td') && $target.hasClass(SETTING.prefix + '-calendar-day')) {
                 if ($target.hasClass(disabledClassName)) {
                     return
                 }
-                _this.$calenderDays.find('td').removeClass(activeDayClassName)
-                $target.addClass(activeDayClassName)
 
                 var date = new Date($target.attr(SETTING.prefix + '-calendar-date')),
                     formatedDate = UTILS.formatDateTime(date, _this.opts.dateFormat),
-                    cbRes
+                    activeDateLunarInfo
 
                 if (new Date(_this.activeDate).valueOf() === date.valueOf()) {
                     return
                 }
 
+                _this.$calenderDays.find('td').removeClass(activeDayClassName)
+                $target.addClass(activeDayClassName)
+
                 _this.activeDate = date
-                typeof _this.opts.onChangeDate === 'function' && _this.opts.onChangeDate.call(_this, _this.activeDate, formatedDate)
+                activeDateLunarInfo = new _this.Lunar(_this.activeDate)
+                typeof _this.opts.onChangeDate === 'function' && _this.opts.onChangeDate.call(_this, _this.activeDate, formatedDate, activeDateLunarInfo)
 
                 if (_this.$srcElement) {
                     $.each(['changeDate', changeDateEvent], function (index, item) {
@@ -334,6 +336,7 @@
                             type: item,
                             date: _this.activeDate,
                             value: formatedDate,
+                            lunarInfo: activeDateLunarInfo,
                             close: _this.close.bind(_this),
                             open: _this.open.bind(_this)
                         })
@@ -360,13 +363,8 @@
                     pos = $target.attr(SETTING.prefix + '-calendar-date')
                 }
 
-                $target.parent().find('span').removeClass(activeClassName)
-                $target.addClass(activeClassName)
-
                 _this.viewDate[setFunc].call(_this.viewDate, pos)
-                _this.showMode(-1)
-                _this.$calenderDays.html('')
-                _this[renderFunc].call(_this)
+                _this.show(-1)
             }
         })
 
@@ -380,155 +378,154 @@
                 getFunc = 'get' + curMode.navFnc,
                 navStep = curMode.navStep
 
-
-            _this.$calenderDays.html('')
-            _this.curPaneCount = 0
             if ($target.hasClass(prevClassName)) {
-                var prevStep = this.viewMode === 0 ? _this.opts.paneCount * 2 + navStep : navStep
+                var prevStep = _this.viewMode === 0 ? _this.paneCount * 2 - navStep : navStep
                 _this.viewDate[setFunc].call(_this.viewDate, _this.viewDate[getFunc].call(_this.viewDate) - prevStep)
-                _this.render()
+                _this.show()
             } else if ($target.hasClass(nextClassName)) {
                 var nextStep = navStep
                 _this.viewDate[setFunc].call(_this.viewDate, _this.viewDate[getFunc].call(_this.viewDate) + nextStep)
-                _this.render()
+                _this.show()
             }
 
         })
     }
 
-    Calendar.prototype.render = function () {
-        this.renderDays()
-        this.renderMonths()
-        this.renderYears()
-    }
-
     Calendar.prototype.renderDays = function () {
-        var viewDate = this.viewDate,
-            viewYear = viewDate.getFullYear(),
-            viewMonth = viewDate.getMonth(),
-            nowDate = this.now,
-            nowYear = nowDate.getFullYear(),
-            nowMonth = nowDate.getMonth(),
-            // nowFirstDayDate = new Date(nowYear, nowMonth),
-            // nowFirstDayWeek = nowFirstDayDate.getDay(),//当月第一天的星期
-            // nowDays = UTILS.getDaysOfYearMonth(nowYear, nowMonth),//当月天数
-            //上月
-            prevMonthDate = new Date(viewYear, viewMonth - 1),
-            prevMonthDateY = prevMonthDate.getFullYear(),
-            prevMonthDateM = prevMonthDate.getMonth(),
-            prevMonthDays = UTILS.getDaysOfYearMonth(prevMonthDateY, prevMonthDateM),
-            //下月
-            nextMonthDate,
-            minDate,
-            maxDate,
-            $table = $(SETTING.getTemplate('table')),
-            prevMonthDateCount = nextMonthDateCount = 0,
-            daysHtml = "",
-            tr = ''
-
-        prevMonthDate.setDate(prevMonthDays)
-        prevMonthDate.setDate(prevMonthDays - (prevMonthDate.getDay() - SETTING.weekStart + 7) % 7)
-
-        nextMonthDate = new Date(prevMonthDate)
-        nextMonthDate.setDate(nextMonthDate.getDate() + 42)
-
-        if (this.opts.minDate) minDate = UTILS.isJqueryInput(this.opts.minDate) ? UTILS.getValidDate($(this.opts.minDate).val()) : UTILS.getValidDate(this.opts.minDate)
-        if (this.opts.maxDate) maxDate = UTILS.isJqueryInput(this.opts.maxDate) ? UTILS.getValidDate($(this.opts.maxDate).val()) : UTILS.getValidDate(this.opts.maxDate)
-
-        renderTitle.call(this, $table);
-        for (startIndex = 1; prevMonthDate.valueOf() < nextMonthDate.valueOf(); prevMonthDate.setDate(prevMonthDate.getDate() + 1), startIndex++) {
-            var prevY = prevMonthDate.getFullYear(),
-                prevM = prevMonthDate.getMonth(),
-                prevD = prevMonthDate.getDate(),
-                prevW = prevMonthDate.getDay(),
-                className = SETTING.prefix + '-calendar-day ',
-                calendarDateAttr = SETTING.prefix + '-calendar-date="' + prevY + '/' + (prevM + 1) + '/' + prevD + '"',
-                isShow = true,
-                td
-
-            if (prevY < viewYear || (prevY === viewYear && prevM < viewMonth)) {
-                if (this.opts.onlyThisMonth) isShow = false
-                className += SETTING.prefix + '-calendar-old '
-                prevMonthDateCount++
-            } else if (prevY > viewYear || (prevY === viewYear && prevM > viewMonth)) {
-                if (this.opts.onlyThisMonth) isShow = false
-                className += SETTING.prefix + '-calendar-new '
-                nextMonthDateCount++
-            }
-
-            if (minDate && prevMonthDate.valueOf() < minDate.valueOf()) {
-                className += SETTING.prefix + '-calendar-disabled '
-            } else if (maxDate && prevMonthDate.valueOf() > maxDate.valueOf()) {
-                className += SETTING.prefix + '-calendar-disabled '
-            }
-
-            if ((prevW === 0 || prevW === 6) && this.opts.highlightWeek) {
-                className += SETTING.prefix + '-calendar-week '
-            }
-
-            if (this.activeDate && (prevMonthDate.valueOf() === this.activeDate.valueOf())) {
-                className += SETTING.prefix + '-calendar-day-active '
-            }
-
-            if (startIndex % 7 === 1) {
-                tr += '<tr>'
-            }
-
-            td = isShow ? '<td class="' + className + '" ' + calendarDateAttr + '>' +
-                this.getDay(prevMonthDate, nowDate) +
-                '</td>' : '<td></td>'
-
-            tr += td
-
-            if (startIndex % 7 === 0) {
-                tr += '</tr>'
-                if (this.opts.onlyThisMonth && (prevMonthDateCount === 7 || nextMonthDateCount === 7)) {
-                    tr = tr.replace(/<tr>/, '<tr style="display:none"')
-                }
-                prevMonthDateCount = nextMonthDateCount = 0
-                daysHtml += tr
+        this.$calenderDays.html('');
+        this.curPaneCount = 0;
+        (function renderTable() {
+            var viewDate = this.viewDate,
+                viewYear = viewDate.getFullYear(),
+                viewMonth = viewDate.getMonth(),
+                nowDate = this.now,
+                nowYear = nowDate.getFullYear(),
+                nowMonth = nowDate.getMonth(),
+                // nowFirstDayDate = new Date(nowYear, nowMonth),
+                // nowFirstDayWeek = nowFirstDayDate.getDay(),//当月第一天的星期
+                // nowDays = UTILS.getDaysOfYearMonth(nowYear, nowMonth),//当月天数
+                //上月
+                prevMonthDate = new Date(viewYear, viewMonth - 1),
+                prevMonthDateY = prevMonthDate.getFullYear(),
+                prevMonthDateM = prevMonthDate.getMonth(),
+                prevMonthDays = UTILS.getDaysOfYearMonth(prevMonthDateY, prevMonthDateM),
+                //下月
+                nextMonthDate,
+                minDate,
+                maxDate,
+                $table = $(SETTING.getTemplate('table')),
+                prevMonthDateCount = nextMonthDateCount = 0,
+                daysHtml = "",
                 tr = ''
-            }
-        }
 
-        $table.find('tbody').html(daysHtml)
-        $table.find('.' + SETTING.prefix + '-calendar-select').text(SETTING.locales[this.opts.locale].getYearMonth(viewDate.getFullYear(), viewDate.getMonth()))
-        this.$calenderDays.append($table)
+            prevMonthDate.setDate(prevMonthDays)
+            prevMonthDate.setDate(prevMonthDays - (prevMonthDate.getDay() - SETTING.weekStart + 7) % 7)
 
-        this.curPaneCount++
-        if (this.curPaneCount < this.opts.paneCount) {
-            this.viewDate.setMonth(this.viewDate.getMonth() + 1)
-            this.renderDays()
-        }
+            nextMonthDate = new Date(prevMonthDate)
+            nextMonthDate.setDate(nextMonthDate.getDate() + 42)
 
-        function renderTitle(tableEl) {
-            var weekStart = SETTING.weekStart, tr = '<tr>';
-            for (var titleIndex = weekStart; titleIndex < weekStart + 7; titleIndex++) {
-                var className = SETTING.prefix + '-calendar-title ',
-                    th
+            if (this.opts.minDate) minDate = UTILS.isJqueryInput(this.opts.minDate) ? UTILS.getValidDate($(this.opts.minDate).val()) : UTILS.getValidDate(this.opts.minDate)
+            if (this.opts.maxDate) maxDate = UTILS.isJqueryInput(this.opts.maxDate) ? UTILS.getValidDate($(this.opts.maxDate).val()) : UTILS.getValidDate(this.opts.maxDate)
 
-                if (this.opts.highlightWeek && ((titleIndex % 7) === 0 || (titleIndex % 7) === 6)) {
-                    className += SETTING.prefix + '-calendar-week'
+            renderTitle.call(this, $table);
+            for (startIndex = 1; prevMonthDate.valueOf() < nextMonthDate.valueOf(); prevMonthDate.setDate(prevMonthDate.getDate() + 1), startIndex++) {
+                var prevY = prevMonthDate.getFullYear(),
+                    prevM = prevMonthDate.getMonth(),
+                    prevD = prevMonthDate.getDate(),
+                    prevW = prevMonthDate.getDay(),
+                    className = SETTING.prefix + '-calendar-day ',
+                    calendarDateAttr = SETTING.prefix + '-calendar-date="' + prevY + '/' + (prevM + 1) + '/' + prevD + '"',
+                    isShow = true,
+                    td
+
+                if (prevY < viewYear || (prevY === viewYear && prevM < viewMonth)) {
+                    if (this.opts.onlyThisMonth) isShow = false
+                    className += SETTING.prefix + '-calendar-old '
+                    prevMonthDateCount++
+                } else if (prevY > viewYear || (prevY === viewYear && prevM > viewMonth)) {
+                    if (this.opts.onlyThisMonth) isShow = false
+                    className += SETTING.prefix + '-calendar-new '
+                    nextMonthDateCount++
                 }
 
-                th = '<th class="' + className + '">' +
-                    SETTING.locales[this.opts.locale].daysShort[titleIndex % 7]
-                '</th>'
+                if (minDate && prevMonthDate.valueOf() < minDate.valueOf()) {
+                    className += SETTING.prefix + '-calendar-disabled '
+                } else if (maxDate && prevMonthDate.valueOf() > maxDate.valueOf()) {
+                    className += SETTING.prefix + '-calendar-disabled '
+                }
 
-                tr += th
+                if ((prevW === 0 || prevW === 6) && this.opts.highlightWeek) {
+                    className += SETTING.prefix + '-calendar-week '
+                }
+
+                if (this.activeDate && (prevMonthDate.valueOf() === this.activeDate.valueOf())) {
+                    className += SETTING.prefix + '-calendar-day-active '
+                }
+
+                if (startIndex % 7 === 1) {
+                    tr += '<tr>'
+                }
+
+                td = isShow ? '<td class="' + className + '" ' + calendarDateAttr + '>' +
+                    this.getDay(prevMonthDate, nowDate) +
+                    '</td>' : '<td></td>'
+
+                tr += td
+
+                if (startIndex % 7 === 0) {
+                    tr += '</tr>'
+                    if (this.opts.onlyThisMonth && (prevMonthDateCount === 7 || nextMonthDateCount === 7)) {
+                        tr = tr.replace(/<tr>/, '<tr style="display:none"')
+                    }
+                    prevMonthDateCount = nextMonthDateCount = 0
+                    daysHtml += tr
+                    tr = ''
+                }
             }
-            tableEl.find('thead').append(tr)
-        }
 
+            $table.find('tbody').html(daysHtml)
+            $table.find('.' + SETTING.prefix + '-calendar-select').text(SETTING.locales[this.opts.locale].getYearMonth(viewDate.getFullYear(), viewDate.getMonth()))
+            this.$calenderDays.append($table)
+
+            this.curPaneCount++
+            if (this.curPaneCount < this.paneCount) {
+                this.viewDate.setMonth(this.viewDate.getMonth() + 1)
+                renderTable.call(this)
+            }
+
+            function renderTitle(tableEl) {
+                var weekStart = SETTING.weekStart, tr = '<tr>';
+                for (var titleIndex = weekStart; titleIndex < weekStart + 7; titleIndex++) {
+                    var className = SETTING.prefix + '-calendar-title ',
+                        th
+
+                    if (this.opts.highlightWeek && ((titleIndex % 7) === 0 || (titleIndex % 7) === 6)) {
+                        className += SETTING.prefix + '-calendar-week'
+                    }
+
+                    th = '<th class="' + className + '">' +
+                        SETTING.locales[this.opts.locale].daysShort[titleIndex % 7]
+                    '</th>'
+
+                    tr += th
+                }
+                tableEl.find('thead').append(tr)
+            }
+        }.call(this))
     }
 
     Calendar.prototype.renderMonths = function () {
         var viewDate = this.viewDate,
+            activeMonth = this.activeDate.getMonth(),
             className = SETTING.prefix + '-calendar-month',
             html = ''
 
         for (var i = 0; i < 12; i++) {
-            html += '<span class="' + className + '">' +
+            var clsName = className,
+                year = viewDate.getFullYear(),
+                attr = SETTING.prefix + '-calendar-date="' + year + '-' + (i + 1) + '"'
+            i === activeMonth && (clsName += ' ' + SETTING.prefix + '-calendar-active')
+            html += '<span class="' + clsName + '" ' + attr + '>' +
                 SETTING.locales[this.opts.locale].months[i] +
                 '</span>'
         }
@@ -561,14 +558,18 @@
         this.$calenderYears.find('.' + SETTING.prefix + '-calendar-select').text(startYear + '-' + (startYear + 9))
     }
 
-    Calendar.prototype.showMode = function (level) {
+    Calendar.prototype.show = function (level) {
         if (level) {
             this.viewMode = Math.max(this.minViewMode,
-                Math.min(2, this.viewMode + level));
+                Math.min(2, this.viewMode + level))
         }
+        var renderFunc = 'render' + SETTING.modes[this.viewMode].name
+        this.paneCount = this.viewMode > 0 ? 1 : this.opts.paneCount
 
+        this[renderFunc].call(this)
         this.$calender.find('>div').hide().
-            filter('.' + SETTING.prefix + '-calendar-' + SETTING.modes[this.viewMode].className).show();
+            filter('.' + SETTING.prefix + '-calendar-' + SETTING.modes[this.viewMode].className).show()
+        this.resetCalendarStyle()
     };
 
     Calendar.prototype.getDay = function (loopDate, nowDate) {
@@ -625,12 +626,12 @@
     }
 
     Calendar.prototype.resetCalendarStyle = function () {
-        var $table = this.$calender.find('table'),
+        var $table = this['$calender' + SETTING.modes[this.viewMode].name].find('table'),
             tableWidth = $table.width(),
             tableHeight = $table.height()
         this.$calender
-            .width(this.opts.paneCount > 3 ? tableWidth * 3 : tableWidth * this.opts.paneCount)
-        // .height(Math.ceil(this.opts.paneCount / 3) * tableHeight)
+            .width(this.paneCount > 3 ? tableWidth * 3 : tableWidth * this.paneCount)
+        // .height(Math.ceil(this.paneCount / 3) * tableHeight)
 
         if (this.$srcElement) {
             var offset = this.$srcElement.offset(),
@@ -685,41 +686,50 @@
             leap = 0,
             temp = 0,
             baseDate = new Date(1900, 0, 31),
-            offset = (sDate - baseDate) / 86400000;
+            offset = (sDate - baseDate) / 86400000
 
-        this.dayCyl = offset + 40;
-        this.monCyl = 14;
+        this.dayCyl = offset + 40
+        this.monCyl = 14
         for (i = 1900; i < 2050 && offset > 0; i++) {
             temp = this.getLunarDaysByYear(i)
-            offset -= temp;
-            this.monCyl += 12;
+            offset -= temp
+            this.monCyl += 12
         }
         if (offset < 0) {
-            offset += temp;
-            i--;
-            this.monCyl -= 12;
+            offset += temp
+            i--
+            this.monCyl -= 12
         }
-        this.year = i;
-        this.yearCyl = i - 1864;
-        leap = this.getLunarLeapMonthByYear(i); //闰哪个月
-        this.isLeap = false;
+        this.year = i
+        this.yearCyl = i - 1864
+        leap = this.getLunarLeapMonthByYear(i) //闰哪个月
+        this.isLeap = false
         for (i = 1; i < 13 && offset > 0; i++) {
             if (leap > 0 && i == (leap + 1) && this.isLeap == false) {	//闰月
-                --i; this.isLeap = true; temp = this.getLunarLeapDaysByYear(this.year);
-            }
-            else {
-                temp = this.getLunarDaysByYearMonth(this.year, i);
+                --i
+                this.isLeap = true
+                temp = this.getLunarLeapDaysByYear(this.year)
+            } else {
+                temp = this.getLunarDaysByYearMonth(this.year, i)
             }
             if (this.isLeap == true && i == (leap + 1)) this.isLeap = false;	//解除闰月
-            offset -= temp;
             if (this.isLeap == false) this.monCyl++;
+            offset -= temp;
         }
-        if (offset == 0 && leap > 0 && i == leap + 1)
-            if (this.isLeap) { this.isLeap = false; }
-            else { this.isLeap = true; --i; --this.monCyl; }
-        if (offset < 0) { offset += temp; --i; --this.monCyl; }
-        this.month = i;
-        this.day = offset + 1;
+        if (offset == 0 && leap > 0 && i == leap + 1) {
+            if (this.isLeap) {
+                this.isLeap = false;
+            } else {
+                this.isLeap = true; --i; --this.monCyl;
+            }
+        }
+        if (offset < 0) {
+            offset += temp
+            --i
+            --this.monCyl
+        }
+        this.month = i
+        this.day = offset + 1
         this.cDay = this.getChineseLunarDay(this.day)
         this.sTermDay1 = this.getSolarTermDay(sDate.getFullYear(), sDate.getMonth() * 2)
         this.sTermDay2 = this.getSolarTermDay(sDate.getFullYear(), sDate.getMonth() * 2 + 1)

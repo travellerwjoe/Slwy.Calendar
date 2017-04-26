@@ -179,6 +179,7 @@ $tdHeight:45px;
     }
     .#{$prefix}-calendar-months,.#{$prefix}-calendar-years{
         display: none;
+        width: 329px;
         table{
             width:100%;
 
