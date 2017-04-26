@@ -314,6 +314,7 @@
                 if ($target.hasClass(disabledClassName)) {
                     return
                 }
+                _this.close()
 
                 var date = new Date($target.attr(SETTING.prefix + '-calendar-date')),
                     formatedDate = UTILS.formatDateTime(date, _this.opts.dateFormat),
@@ -344,9 +345,7 @@
                     //如果onChangeDate回调未声明并且未在jqueryDom对象上绑定无命名空间的onChangeDate事件执行默认操作
                     if (typeof _this.opts.onChangeDate !== 'function' && !UTILS.isEventOnNamespace(_this.$srcElement, 'changeDate', '')) {
                         _this.$srcElement.val(formatedDate)
-                        _this.close()
                     }
-
                 }
             } else if ($target.is('span')) {
                 var curMode = SETTING.modes[_this.viewMode],
@@ -401,9 +400,6 @@
                 nowDate = this.now,
                 nowYear = nowDate.getFullYear(),
                 nowMonth = nowDate.getMonth(),
-                // nowFirstDayDate = new Date(nowYear, nowMonth),
-                // nowFirstDayWeek = nowFirstDayDate.getDay(),//当月第一天的星期
-                // nowDays = UTILS.getDaysOfYearMonth(nowYear, nowMonth),//当月天数
                 //上月
                 prevMonthDate = new Date(viewYear, viewMonth - 1),
                 prevMonthDateY = prevMonthDate.getFullYear(),
@@ -577,6 +573,7 @@
             todayClassName = SETTING.prefix + '-calendar-today',
             lunarClassName = SETTING.prefix + '-calendar-lunar',
             festivalClassName = SETTING.prefix + '-calendar-festival'
+
         if (UTILS.isSameDay(loopDate, nowDate)) {
             str = '<div class="' + todayClassName + '">' + SETTING.locales[this.opts.locale].today + '</div>'
         } else {
@@ -584,7 +581,7 @@
         }
         if (this.opts.showLunarAndFestival) {
             str += '<div class="' + lunarClassName + '">' + this.getLunarAndFestival(loopDate) + '</div>'
-        } else {
+        } else if (this.opts.showMainFestival || this.opts.showFestival) {
             var festival = this.getLunarAndFestival(loopDate, {
                 onlyReturnMainFestival: this.opts.showMainFestival,
                 onlyReturnFestival: this.opts.showFestival
