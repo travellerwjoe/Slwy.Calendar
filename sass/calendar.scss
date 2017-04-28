@@ -7,8 +7,8 @@ $fouthColor:#fce9e9;
 $hoverBg:rgba(255,255,255,0.2);
 $headerHeight:50px;
 $thHeight:48px;
-$tdWidth:45px;
-$tdHeight:45px;
+$tdWidth:47px;
+$tdHeight:47px;
 
 .#{$prefix}-calendar{
     top: 0;
@@ -116,6 +116,7 @@ $tdHeight:45px;
         td,th{
             text-align: center;
             font-weight: 400;
+            box-sizing: border-box
         }
         th{
             height:$thHeight;
@@ -187,7 +188,7 @@ $tdHeight:45px;
         }
         .#{$prefix}-calendar-month,.#{$prefix}-calendar-year{
             display: block;
-            width: $tdWidth * 2.4;
+            width: $tdWidth * 2.31;
             height: 40px;
             line-height: 40px;
             float: left;
@@ -239,11 +240,22 @@ $tdHeight:45px;
                     background-color: #fafafa;
                 }
                 &.#{$prefix}-calendar-day-active{
-                    border-bottom:4px solid $mainColor;
                     color:$mainColor!important;
                     // font-weight: bold;
-                    &:before,&:after{
+                    &:before{
                         content:initial;
+                    }
+                    &:after{
+                        height: 3.5px;
+                        width: 100%;
+                        position: absolute;
+                        bottom: 0;
+                        left:0;
+                        background-color: $mainColor;
+                        border:0;
+                        border-radius: 0;
+                        margin:0;
+                        top:inherit;
                     }
                 }
             }

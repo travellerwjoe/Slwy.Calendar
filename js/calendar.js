@@ -188,7 +188,7 @@
         },
         formatDateTime: function (date, fmt) {
             if (typeof (date) == 'string') date = date.replace(/-/g, '/');
-            date = new Date(date);
+            date = new Date(date).toString() !== 'Invalid Date' ? new Date(date) : new Date();
             var o = {
                 "M+": date.getMonth() + 1, //月份 
                 "d+": date.getDate(), //日 
@@ -306,11 +306,27 @@
             clickEvent = 'click.' + SETTING.prefix + '.Calendar',
             focusEvent = 'focus.' + SETTING.prefix + '.Calendar',
             blurEvent = 'blur.' + SETTING.prefix + '.Calendar',
+            keyupEvent = 'keyup.' + SETTING.prefix + '.Calendar',
             changeDateEvent = 'changeDate.' + SETTING.prefix + '.Calendar'
 
         if (this.$srcElement) {
+            this.$srcElement.on(keyupEvent, function (e) {
+                var date = new Date(UTILS.formatDateTime($(this).val(), 'yyyy/MM/dd'))
+                _this.activeDate = date
+                _this.viewDate = new Date(date)
+                _this.show()
+            })
             this.$srcElement.on(focusEvent, function (e) {
                 _this.open()
+            })
+
+            this.$srcElement.on(blurEvent, function (e) {
+                var date = new Date(UTILS.formatDateTime($(this).val(), 'yyyy/MM/dd'))
+
+                if (date.valueOf() > new Date(_this.opts.maxDate).valueOf() || date.valueOf() < new Date(_this.opts.minDate).valueOf()) {
+                    alert('不合理的时间范围');
+                    $(this).val(UTILS.formatDateTime(_this.now, _this.opts.dateFormat)).trigger(keyupEvent)
+                }
             })
 
             $(document).on(clickEvent, function (e) {
@@ -670,6 +686,7 @@
         var $table = this['$calender' + SETTING.modes[this.viewMode].name].find('table'),
             tableWidth = $table.width(),
             tableHeight = $table.height()
+
         this.$calender
             .width(this.paneCount > 3 ? tableWidth * 3 : tableWidth * this.paneCount)
         // .height(Math.ceil(this.paneCount / 3) * tableHeight)
