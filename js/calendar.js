@@ -136,6 +136,9 @@
         yearStart: 1990,//年份开始
         yearEnd: 2050,//年份结束
         weekStart: 0,//一周开始星期，0星期日
+        theme: {
+            THEME_CUTE: 'cute'
+        }
     }
 
     var UTILS = {
@@ -258,7 +261,8 @@
             dateFormat: 'yyyy-MM-dd',
             onChangeDate: null,
             viewMode: 'days',
-            minViewMode: 'days'
+            minViewMode: 'days',
+            theme: null,
         }
         this.opts = $.extend(true, dfts, opts)
         var template = SETTING.getTemplate()
@@ -278,6 +282,11 @@
         this.mainFestival = $.isArray(this.opts.mainFestival) && this.opts.mainFestival.length && this.opts.mainFestival || SETTING.mainFestival
         this.viewMode = SETTING.modesName.indexOf(this.opts.viewMode) >= 0 ? SETTING.modesName.indexOf(this.opts.viewMode) : 0
         this.minViewMode = SETTING.modesName.indexOf(this.opts.minViewMode) >= 0 ? SETTING.modesName.indexOf(this.opts.minViewMode) : 0
+        this.theme = SETTING.theme[this.opts.theme]
+
+        if (this.theme) {
+            this.$calender.addClass(SETTING.prefix + '-calendar-' + this.theme)
+        }
 
         //如有触发元素隐藏日历待触发时显示
         if (this.$srcElement) {
@@ -524,7 +533,7 @@
             }
 
             function renderTitle(tableEl) {
-                var weekStart = SETTING.weekStart, tr = '<tr>';
+                var weekStart = SETTING.weekStart, tr = '<tr class="' + SETTING.prefix + '-calendar-titles">';
                 for (var titleIndex = weekStart; titleIndex < weekStart + 7; titleIndex++) {
                     var className = SETTING.prefix + '-calendar-title ',
                         th
@@ -685,8 +694,6 @@
     Calendar.prototype.close = function () {
         this.$calender.hide()
     }
-
-    
 
     function Lunar(sDate) {
         var i,

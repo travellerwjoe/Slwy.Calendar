@@ -1,4 +1,5 @@
 $prefix:'Slwy';
+$theme2:$prefix+'-calendar-cute';
 $mainColor:#003b9f;
 $minorColor:#0c80ba;
 $thirdColor:#eb5455;
@@ -40,7 +41,7 @@ $tdHeight:45px;
         -ms-transform: rotate(360deg);
         transform: rotate(360deg);
         position: absolute;
-        top: -7px;
+        top: -6px;
         left: 30px;
     }
     .#{$prefix}-calendar-action{
@@ -186,7 +187,7 @@ $tdHeight:45px;
         }
         .#{$prefix}-calendar-month,.#{$prefix}-calendar-year{
             display: block;
-            width: $tdWidth * 2.422;
+            width: $tdWidth * 2.4;
             height: 40px;
             line-height: 40px;
             float: left;
@@ -222,4 +223,30 @@ $tdHeight:45px;
         color:$mainColor!important;
     }
     
+    &.#{$theme2}{
+        border-radius:10px;
+        padding-bottom: 0;
+        .#{$prefix}-calendar-table{
+            .#{$prefix}-calendar-titles{
+                background-color: $mainColor;
+                th{
+                    color:#fff;
+                }
+            }
+            td{
+                border:1px solid #eee;
+                &.#{$prefix}-calendar-disabled{
+                    background-color: #fafafa;
+                }
+                &.#{$prefix}-calendar-day-active{
+                    border-bottom:4px solid $mainColor;
+                    color:$mainColor!important;
+                    // font-weight: bold;
+                    &:before,&:after{
+                        content:initial;
+                    }
+                }
+            }
+        }
+    }
 }
