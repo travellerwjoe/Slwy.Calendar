@@ -1,7 +1,7 @@
 /**
  * @preserve jquery.Slwy.Calendar.js
  * @author Joe.Wu
- * @version v1.0.0
+ * @version v1.0.1
  */
 (function (root, factory) {
     if (typeof define === 'function' && define.amd) {
@@ -331,7 +331,7 @@
             this.$srcElement.on(blurEvent, function (e) {
                 var date = new Date(UTILS.formatDateTime($(this).val(), 'yyyy/MM/dd'))
 
-                if (date.valueOf() > new Date(_this.opts.maxDate).valueOf() || date.valueOf() < new Date(_this.opts.minDate).valueOf()) {
+                if ((_this.opts.maxDate && date.valueOf() > new Date(_this.opts.maxDate).valueOf()) || (_this.opts.minDate && date.valueOf() < new Date(_this.opts.minDate).valueOf())) {
                     alert(_this.opts.invalidTips);
                     $(this).val('').trigger(keyupEvent)
                 }

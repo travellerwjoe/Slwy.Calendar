@@ -22,6 +22,7 @@
     <input type="text" id="date2" placeholder="点击展开日历">
     <script src="js/jquery.1.8.3.min.js"></script>
     <script src="dist/jquery.slwy.calendar.min.js"></script>
+    <!--<script src="js/calendar.js"></script>-->
     <script>
         /*        function getBase64Image(img) {
             var canvas = document.createElement("canvas");
@@ -77,13 +78,14 @@
             locale: 'zh_CN',
             // locale: 'en_US',
             paneCount: 2,
+            // onlyThisMonth: true,
             showMainFestival: true,
             // showFestival: true,
             // showLunarAndFestival: true,
             // dateFormat: 'yyyy/MM/dd',
             // highlightWeek: false,
             // minDate: '2017-04-10',
-            minDate: '#date',
+            // minDate: new Date(),
             maxDate: '2017-5-30',
             theme: 'THEME_CUTE',
             // viewMode:'years',
