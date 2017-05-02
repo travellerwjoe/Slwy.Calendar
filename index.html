@@ -21,7 +21,7 @@
     <input type="text" id="date" placeholder="点击展开日历">
     <input type="text" id="date2" placeholder="点击展开日历">
     <script src="js/jquery.1.8.3.min.js"></script>
-    <script src="js/calendar.js"></script>
+    <script src="dist/jquery.slwy.calendar.min.js"></script>
     <script>
         /*        function getBase64Image(img) {
             var canvas = document.createElement("canvas");
@@ -80,7 +80,7 @@
             showMainFestival: true,
             // showFestival: true,
             // showLunarAndFestival: true,
-            dateFormat: 'yyyy/MM/dd',
+            // dateFormat: 'yyyy/MM/dd',
             // highlightWeek: false,
             // minDate: '2017-04-10',
             minDate: '#date',
@@ -94,11 +94,11 @@
             }*/
             // maxDate: new Date(),
             // invalidTips: '该日期不可选'
-        // })
-        }).on('changeDate', function (e) {
+        })
+        /*}).on('changeDate', function (e) {
             // e.close()
             // console.log(e.date, e.value)
-        })
+        })*/
 
 
         // new SlwyCalendar('#date')

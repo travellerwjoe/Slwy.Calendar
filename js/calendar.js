@@ -1,3 +1,8 @@
+/**
+ * @preserve jquery.Slwy.Calendar.js
+ * @author Joe.Wu
+ * @version v1.0.0
+ */
 (function (root, factory) {
     if (typeof define === 'function' && define.amd) {
         require(['jQuery'], factory)
@@ -147,7 +152,7 @@
             return $(selector).is('input')
         },
         //指定元素是否上是否存在指定命名空间的事件
-        isEventOnNamespace(el, event, namespace) {
+        isEventOnNamespace: function (el, event, namespace) {
             var flag = false,
                 events = $._data(el[0], 'events')[event]
             el = $(el)

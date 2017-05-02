@@ -1,0 +1,33 @@
+{
+  "name": "jquery.slwy.calendar",
+  "version": "1.0.0",
+  "description": "slwy jquery日期插件",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "minify": "uglifyjs js/calendar.js -c -m -o dist/jquery.Slwy.Calendar.min.js --comments && uglifycss css/calendar.css > dist/jquery.Slwy.Calendar.min.css",
+    "github": "git add * && git commit -m \"New version %npm_package_version% \": ${m}&& git tag %npm_package_version% && git push --tag origin HEAD:master && npm publish"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/travellerwjoe/Slwy.Calendar.git"
+  },
+  "keywords": [
+    "slwy",
+    "datepicker",
+    "calendar"
+  ],
+  "author": "Joe.Wu",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/travellerwjoe/Slwy.Calendar/issues"
+  },
+  "homepage": "https://github.com/travellerwjoe/Slwy.Calendar#readme",
+  "devDependencies": {
+    "uglify-js": "^2.8.22",
+    "uglifycss": "0.0.27"
+  },
+  "dependencies": {
+    "jquery": ">=1.8.3"
+  }
+}
