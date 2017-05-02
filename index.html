@@ -70,42 +70,35 @@
             // maxDate: new Date()
         })
         /*        }).on('changeDate', function (e) {
-                    debugger
                     e.close()
                     // console.log(e.date, e.value)
-                    // console.log(e.returnValue,window.event.returnValue)
-                    // window.event.returnValue = false
-                    return false
                 })*/
-        var date2 = $('#date2').SlwyCalendar({
+        $('#date2').SlwyCalendar({
             locale: 'zh_CN',
             // locale: 'en_US',
             paneCount: 2,
             showMainFestival: true,
             // showFestival: true,
             // showLunarAndFestival: true,
-            dateFormat:'yyyy/MM/dd',
+            dateFormat: 'yyyy/MM/dd',
             // highlightWeek: false,
             // minDate: '2017-04-10',
             minDate: '#date',
             maxDate: '2017-5-30',
-            theme:'THEME_CUTE'
+            theme: 'THEME_CUTE',
             // viewMode:'years',
             // minViewMode:'days'
-            // onChangeDate: function (date, value, lunarInfo) {
-            //     /*console.log(date, value)
-            //     console.log(date2,this)*/
-            //     return true
-            // }
-            // maxDate: new Date()
-        })
-        /*}).on('changeDate', function (e) {
-            e.close()
+            /*onChangeDate: function (date, value, lunarInfo) {
+                console.log(date, value)
+                return true
+            }*/
+            // maxDate: new Date(),
+            // invalidTips: '该日期不可选'
+        // })
+        }).on('changeDate', function (e) {
+            // e.close()
             // console.log(e.date, e.value)
-            // console.log(e.returnValue,window.event.returnValue)
-            // window.event.returnValue = false
-            return false
-        })*/
+        })
 
 
         // new SlwyCalendar('#date')

@@ -263,6 +263,7 @@
             viewMode: 'days',
             minViewMode: 'days',
             theme: null,
+            invalidTips: '该日期不可选'
         }
         this.opts = $.extend(true, dfts, opts)
         var template = SETTING.getTemplate()
@@ -311,11 +312,13 @@
 
         if (this.$srcElement) {
             this.$srcElement.on(keyupEvent, function (e) {
-                var date = new Date(UTILS.formatDateTime($(this).val(), 'yyyy/MM/dd'))
+                var val = $(this).val(),
+                    date = val ? new Date(UTILS.formatDateTime(val, 'yyyy/MM/dd')) : null
                 _this.activeDate = date
-                _this.viewDate = new Date(date)
+                _this.viewDate = date ? new Date(date) : new Date()
                 _this.show()
             })
+
             this.$srcElement.on(focusEvent, function (e) {
                 _this.open()
             })
@@ -324,8 +327,8 @@
                 var date = new Date(UTILS.formatDateTime($(this).val(), 'yyyy/MM/dd'))
 
                 if (date.valueOf() > new Date(_this.opts.maxDate).valueOf() || date.valueOf() < new Date(_this.opts.minDate).valueOf()) {
-                    alert('不合理的时间范围');
-                    $(this).val(UTILS.formatDateTime(_this.now, _this.opts.dateFormat)).trigger(keyupEvent)
+                    alert(_this.opts.invalidTips);
+                    $(this).val('').trigger(keyupEvent)
                 }
             })
 
@@ -395,7 +398,8 @@
             function changeDate(date) {
                 var date = new Date(date),
                     formatedDate = UTILS.formatDateTime(date, _this.opts.dateFormat),
-                    activeDateLunarInfo
+                    activeDateLunarInfo,
+                    callbackRes = false
                 if (new Date(_this.activeDate).valueOf() === date.valueOf()) {
                     return
                 }
@@ -405,7 +409,7 @@
 
                 _this.activeDate = date
                 activeDateLunarInfo = new _this.Lunar(_this.activeDate)
-                typeof _this.opts.onChangeDate === 'function' && _this.opts.onChangeDate.call(_this, _this.activeDate, formatedDate, activeDateLunarInfo)
+                callbackRes = typeof _this.opts.onChangeDate === 'function' && _this.opts.onChangeDate.call(_this, _this.activeDate, formatedDate, activeDateLunarInfo)
 
                 if (_this.$srcElement) {
                     $.each(['changeDate', changeDateEvent], function (index, item) {
@@ -418,8 +422,8 @@
                             open: _this.open.bind(_this)
                         })
                     })
-                    //如果onChangeDate回调未声明并且未在jqueryDom对象上绑定无命名空间的onChangeDate事件执行默认操作
-                    if (typeof _this.opts.onChangeDate !== 'function' && !UTILS.isEventOnNamespace(_this.$srcElement, 'changeDate', '')) {
+                    //如果onChangeDate回调未声明并且未在jqueryDom对象上绑定无命名空间的onChangeDate事件或者onChangeDate申明并调用返回的结果为true执行默认操作
+                    if (typeof _this.opts.onChangeDate !== 'function' && !UTILS.isEventOnNamespace(_this.$srcElement, 'changeDate', '') || callbackRes) {
                         _this.$srcElement.val(formatedDate)
                     }
                 }
@@ -457,8 +461,6 @@
                 viewYear = viewDate.getFullYear(),
                 viewMonth = viewDate.getMonth(),
                 nowDate = this.now,
-                nowYear = nowDate.getFullYear(),
-                nowMonth = nowDate.getMonth(),
                 //上月
                 prevMonthDate = new Date(viewYear, viewMonth - 1),
                 prevMonthDateY = prevMonthDate.getFullYear(),
@@ -571,8 +573,8 @@
 
     Calendar.prototype.renderMonths = function () {
         var viewDate = this.viewDate,
-            activeYear = this.activeDate.getFullYear(),
-            activeMonth = this.activeDate.getMonth(),
+            activeYear = this.activeDate ? this.activeDate.getFullYear() : null,
+            activeMonth = this.activeDate ? this.activeDate.getMonth() : null,
             className = SETTING.prefix + '-calendar-month',
             html = ''
 
@@ -594,7 +596,7 @@
         var viewDate = this.viewDate,
             className = SETTING.prefix + '-calendar-year',
             viewYear = viewDate.getFullYear(),
-            activeYear = this.activeDate.getFullYear(),
+            activeYear = this.activeDate ? this.activeDate.getFullYear() : null,
             startYear = parseInt(viewYear / 10) * 10,
             html = ''
 
