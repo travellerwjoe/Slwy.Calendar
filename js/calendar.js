@@ -1,7 +1,7 @@
 /**
  * @preserve jquery.Slwy.Calendar.js
  * @author Joe.Wu
- * @version v1.0.2
+ * @version v1.0.3
  */
 (function (root, factory) {
     if (typeof define === 'function' && define.amd) {
@@ -367,6 +367,7 @@
             })
 
             this.$srcElement.on(blurEvent, function (e) {
+                if (!$(this).val()) return
                 var date = new Date(UTILS.formatDateTime($(this).val(), 'yyyy/MM/dd'))
                 if ((_this.opts.maxDate && date.valueOf() > new Date(_this.opts.maxDate).valueOf()) || (_this.opts.minDate && date.valueOf() < new Date(_this.opts.minDate).valueOf())) {
                     alert(_this.opts.invalidTips);
