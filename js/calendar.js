@@ -1,7 +1,7 @@
 /**
  * @preserve jquery.Slwy.Calendar.js
  * @author Joe.Wu
- * @version v1.1.1
+ * @version v1.1.2
  */
 (function (root, factory) {
     if (typeof define === 'function' && define.amd) {
@@ -763,16 +763,16 @@
     }
 
     Calendar.prototype.open = function () {
+        this.$calender.removeClass(VARS.className.hidden).show()
         //设置viewDate与activeDate为控件的值
         if (this.$srcElement && this.$srcElement.val()) {
             var val = this.$srcElement.val()
             if (UTILS.getValidDate(val).valueOf() !== this.activeDate.valueOf()) {
                 this.viewDate = UTILS.getValidDate(val)
                 this.activeDate = UTILS.getValidDate(val)
-                this.renderDays()
+                this.show()
             }
         }
-        this.$calender.removeClass(VARS.className.hidden).show()
     }
 
     Calendar.prototype.close = function () {
