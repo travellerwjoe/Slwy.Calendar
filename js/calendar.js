@@ -1,7 +1,7 @@
 /**
  * @preserve jquery.Slwy.Calendar.js
  * @author Joe.Wu
- * @version v1.1.0
+ * @version v1.1.1
  */
 (function (root, factory) {
     if (typeof define === 'function' && define.amd) {
@@ -323,7 +323,7 @@
 
         this.now = new Date()
         this.viewDate = new Date() //当前面板显示时间
-        this.activeDate = this.$srcElement ? UTILS.getValidDate(this.$srcElement.val()) : null //当前选中时间
+        this.activeDate = new Date() //当前选中时间
         this.paneCount = this.opts.paneCount
         this.curPaneCount = 0 //当前面板数量
         this.Lunar = Lunar
@@ -366,7 +366,7 @@
             changeDateEvent = VARS.events.changeDateEvent
 
         if (this.$srcElement) {
-            this.$srcElement.on(keyupEvent, function (e) {
+            this.$srcElement.on(keyupEvent, function () {
                 var val = $(this).val(),
                     date
                 if (!val) return
@@ -374,9 +374,9 @@
                 _this.activeDate = date.valueOf() ? date : null
                 _this.viewDate = date.valueOf() ? new Date(date) : new Date()
                 _this.show()
-            }).on(focusEvent, function (e) {
+            }).on(focusEvent, function () {
                 _this.open()
-            }).on(blurEvent, function (e) {
+            }).on(blurEvent, function () {
                 checkDateValid.call(this)
             })
 
@@ -763,6 +763,15 @@
     }
 
     Calendar.prototype.open = function () {
+        //设置viewDate与activeDate为控件的值
+        if (this.$srcElement && this.$srcElement.val()) {
+            var val = this.$srcElement.val()
+            if (UTILS.getValidDate(val).valueOf() !== this.activeDate.valueOf()) {
+                this.viewDate = UTILS.getValidDate(val)
+                this.activeDate = UTILS.getValidDate(val)
+                this.renderDays()
+            }
+        }
         this.$calender.removeClass(VARS.className.hidden).show()
     }
 
