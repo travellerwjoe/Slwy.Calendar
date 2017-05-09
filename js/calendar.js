@@ -1,7 +1,7 @@
 /**
  * @preserve jquery.Slwy.Calendar.js
  * @author Joe.Wu
- * @version v1.0.3
+ * @version v1.0.4
  */
 (function (root, factory) {
     if (typeof define === 'function' && define.amd) {
@@ -326,6 +326,8 @@
         this.viewMode = VARS.modesName.indexOf(this.opts.viewMode) >= 0 ? VARS.modesName.indexOf(this.opts.viewMode) : 0
         this.minViewMode = VARS.modesName.indexOf(this.opts.minViewMode) >= 0 ? VARS.modesName.indexOf(this.opts.minViewMode) : 0
         this.theme = SETTING.theme[this.opts.theme]
+        this.maxDate = this.opts.maxDate ? UTILS.isJqueryInput(this.opts.maxDate) ? UTILS.getValidDate($(this.opts.maxDate).val()) : UTILS.getValidDate(this.opts.maxDate) : null
+        this.minDate = this.opts.minDate ? UTILS.isJqueryInput(this.opts.minDate) ? UTILS.getValidDate($(this.opts.minDate).val()) : UTILS.getValidDate(this.opts.minDate) : null
 
         if (this.theme) {
             this.$calender.addClass(SETTING.prefix + '-calendar-' + this.theme)
@@ -356,23 +358,16 @@
         if (this.$srcElement) {
             this.$srcElement.on(keyupEvent, function (e) {
                 var val = $(this).val(),
-                    date = val ? new Date(UTILS.formatDateTime(val, 'yyyy/MM/dd')) : null
-                _this.activeDate = date
-                _this.viewDate = date ? new Date(date) : new Date()
+                    date
+                if (!val) return
+                date = val ? new Date(UTILS.getValidDate(val)) : null
+                _this.activeDate = date.valueOf() ? date : null
+                _this.viewDate = date.valueOf() ? new Date(date) : new Date()
                 _this.show()
-            })
-
-            this.$srcElement.on(focusEvent, function (e) {
+            }).on(focusEvent, function (e) {
                 _this.open()
-            })
-
-            this.$srcElement.on(blurEvent, function (e) {
-                if (!$(this).val()) return
-                var date = new Date(UTILS.formatDateTime($(this).val(), 'yyyy/MM/dd'))
-                if ((_this.opts.maxDate && date.valueOf() > new Date(_this.opts.maxDate).valueOf()) || (_this.opts.minDate && date.valueOf() < new Date(_this.opts.minDate).valueOf())) {
-                    alert(_this.opts.invalidTips);
-                    $(this).val('').trigger(keyupEvent)
-                }
+            }).on(blurEvent, function (e) {
+                checkDateValid.call(this)
             })
 
             $(document).on(clickEvent, function (e) {
@@ -384,11 +379,21 @@
             })
         }
 
+        //检查绑定控件的值是否是有效的可选日期，满足lte maxData && gte minDate
+        function checkDateValid() {
+            if (!$(this).val()) return
+            var date = new Date(UTILS.getValidDate($(this).val()))
+            if (!date.valueOf() || (_this.maxDate && date.valueOf() > new Date(_this.maxDate).valueOf()) || (_this.minDate && date.valueOf() < new Date(_this.minDate).valueOf())) {
+                alert(_this.opts.invalidTips);
+                $(this).val('').trigger(keyupEvent)
+            }
+        }
+
         //当minDate或maxDate是另一个元素时与其交互改变可选日期
         $.each(['minDate', 'maxDate'], function (index, date) {
             var changeOtherDate = function (e) {
                 if (e.type === "changeDate" && e.namespace !== 'Calendar.' + SETTING.prefix) return
-                _this.opts[date] = e.date || $(this).val()
+                _this[date] = UTILS.getValidDate(e.date || $(this).val())
                 _this.viewDate = new Date()
                 _this.activeDate = _this.$srcElement ? UTILS.getValidDate(_this.$srcElement.val()) : null
                 _this.renderDays()
@@ -412,11 +417,10 @@
                 if ($target.hasClass(disabledClassName)) {
                     return
                 }
-                _this.close()
-
                 var dateStr = $target.attr(dateAttr);
 
                 changeDate(dateStr)
+                _this.close()
             } else if ($target.is('span')) {
                 var dateStr = $target.attr(dateAttr),
                     // curMode = VARS.modes[_this.viewMode],
@@ -471,6 +475,7 @@
                     //如果onChangeDate回调未声明并且未在jqueryDom对象上绑定无命名空间的onChangeDate事件或者onChangeDate申明并调用返回的结果为true执行默认操作
                     if (typeof _this.opts.onChangeDate !== 'function' && !UTILS.isEventOnNamespace(_this.$srcElement, 'changeDate', '') || callbackRes) {
                         _this.$srcElement.val(formatedDate)
+                        checkDateValid.call(_this.$srcElement)
                     }
                 }
             }
@@ -514,8 +519,8 @@
                 prevMonthDays = UTILS.getDaysOfYearMonth(prevMonthDateY, prevMonthDateM),
                 //下月
                 nextMonthDate,
-                minDate,
-                maxDate,
+                minDate = this.minDate,
+                maxDate = this.maxDate,
                 $table = $(SETTING.getTemplate('table')),
                 prevMonthDateCount = nextMonthDateCount = 0,
                 daysHtml = "",
@@ -526,9 +531,6 @@
 
             nextMonthDate = new Date(prevMonthDate)
             nextMonthDate.setDate(nextMonthDate.getDate() + 42)
-
-            if (this.opts.minDate) minDate = UTILS.isJqueryInput(this.opts.minDate) ? UTILS.getValidDate($(this.opts.minDate).val()) : UTILS.getValidDate(this.opts.minDate)
-            if (this.opts.maxDate) maxDate = UTILS.isJqueryInput(this.opts.maxDate) ? UTILS.getValidDate($(this.opts.maxDate).val()) : UTILS.getValidDate(this.opts.maxDate)
 
             renderTitle.call(this, $table);
             for (startIndex = 1; prevMonthDate.valueOf() < nextMonthDate.valueOf(); prevMonthDate.setDate(prevMonthDate.getDate() + 1), startIndex++) {
