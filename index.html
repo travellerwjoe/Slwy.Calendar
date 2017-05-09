@@ -22,37 +22,8 @@
     <input type="text" id="date2" placeholder="点击展开日历">
     <script src="js/jquery.1.8.3.min.js"></script>
     <script src="dist/jquery.slwy.calendar.min.js"></script>
-    <!--<script src="js/calendar.js"></script>-->
+    <script src="js/calendar.js"></script>
     <script>
-        /*        function getBase64Image(img) {
-            var canvas = document.createElement("canvas");
-            canvas.width = img.width;
-            canvas.height = img.height;
-
-            var ctx = canvas.getContext("2d");
-            ctx.drawImage(img, 0, 0, img.width, img.height);
-
-            var dataURL = canvas.toDataURL("image/png");
-            return dataURL
-
-            // return dataURL.replace("data:image/png;base64,", "");
-        }
-
-
-        function main() {
-            var img = document.createElement('img');
-            img.src = './left.png';
-            img.onload = function () {
-                var data = getBase64Image(img);
-                console.log(data);
-            }
-
-            document.body.appendChild(img);
-        }
-
-
-        main()*/
-
         var date1 = $('#date').SlwyCalendar({
             locale: 'zh_CN',
             paneCount: 2,
@@ -62,7 +33,8 @@
             // highlightWeek: false,
             // minDate: '2017-04-10',
             minDate: new Date(),
-            maxDate: $('#date2')
+            maxDate: $('#date2'),
+            // size:'sm'
             // onChangeDate: function (date, value, lunarInfo) {
             //     /*console.log(date, value)
             //     console.log(date2,this)*/
@@ -78,7 +50,7 @@
             locale: 'zh_CN',
             // locale: 'en_US',
             paneCount: 2,
-            // onlyThisMonth: true,
+            onlyThisMonth: true,
             showMainFestival: true,
             // showFestival: true,
             // showLunarAndFestival: true,
@@ -88,7 +60,8 @@
             // minDate: new Date(),
             minDate: '1900-01-01',
             maxDate: '2017-5-30',
-            theme: 'THEME_CUTE',
+            theme: 'THEME_CUTE_NOBORDER',
+            size: 'sm',
             // viewMode:'years',
             // minViewMode:'days'
             /*onChangeDate: function (date, value, lunarInfo) {

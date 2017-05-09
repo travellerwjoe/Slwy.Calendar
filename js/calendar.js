@@ -1,7 +1,7 @@
 /**
  * @preserve jquery.Slwy.Calendar.js
  * @author Joe.Wu
- * @version v1.0.4
+ * @version v1.1.0
  */
 (function (root, factory) {
     if (typeof define === 'function' && define.amd) {
@@ -85,7 +85,11 @@
         yearEnd: 2050,//年份结束
         weekStart: 0,//一周开始星期，0星期日
         theme: {
-            THEME_CUTE: 'cute'
+            THEME_CUTE: 'cute',
+            THEME_CUTE_NOBORDER: 'cute-noborder'
+        },
+        size: {
+            sm: 'sm'
         }
     }
 
@@ -305,7 +309,8 @@
             viewMode: 'days',
             minViewMode: 'days',
             theme: null,
-            invalidTips: '该日期不可选'
+            invalidTips: '该日期不可选',
+            size: null,//日历大小，sm 与 默认
         }
         this.opts = $.extend(true, dfts, opts)
         var template = SETTING.getTemplate()
@@ -328,9 +333,14 @@
         this.theme = SETTING.theme[this.opts.theme]
         this.maxDate = this.opts.maxDate ? UTILS.isJqueryInput(this.opts.maxDate) ? UTILS.getValidDate($(this.opts.maxDate).val()) : UTILS.getValidDate(this.opts.maxDate) : null
         this.minDate = this.opts.minDate ? UTILS.isJqueryInput(this.opts.minDate) ? UTILS.getValidDate($(this.opts.minDate).val()) : UTILS.getValidDate(this.opts.minDate) : null
+        this.size = SETTING.size[this.opts.size]
 
         if (this.theme) {
             this.$calender.addClass(SETTING.prefix + '-calendar-' + this.theme)
+        }
+
+        if (this.size) {
+            this.$calender.addClass(SETTING.prefix + '-calendar-' + this.size)
         }
 
         //如有触发元素隐藏日历待触发时显示

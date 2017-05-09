@@ -1,14 +1,22 @@
 $prefix:'Slwy';
-$theme2:$prefix+'-calendar-cute';
+$theme-cute:$prefix+'-calendar-cute';
+$theme-cute-noborder:$prefix+'-calendar-cute-noborder';
+$size-sm:$prefix+'-calendar-sm';
 $mainColor:#003b9f;
 $minorColor:#0c80ba;
 $thirdColor:#eb5455;
 $fouthColor:#fce9e9;
 $hoverBg:rgba(255,255,255,0.2);
+$daysYearsWidth:329px;
 $headerHeight:50px;
 $thHeight:48px;
 $tdWidth:47px;
 $tdHeight:47px;
+$tdWidth-sm:40px;
+$tdHeight-sm:40px;
+$headerHeight-sm:40px;
+$daysYearsWidth-sm:280px;
+
 
 .#{$prefix}-calendar{
     top: 0;
@@ -181,7 +189,7 @@ $tdHeight:47px;
     }
     .#{$prefix}-calendar-months,.#{$prefix}-calendar-years{
         display: none;
-        width: 329px;
+        width: $daysYearsWidth;
         table{
             width:100%;
 
@@ -224,7 +232,7 @@ $tdHeight:47px;
         color:$mainColor!important;
     }
     
-    &.#{$theme2}{
+    &.#{$theme-cute},&.#{$theme-cute-noborder}{
         border-radius:10px;
         padding-bottom: 0;
         .#{$prefix}-calendar-table{
@@ -256,8 +264,74 @@ $tdHeight:47px;
                         border-radius: 0;
                         margin:0;
                         top:inherit;
+                        border:0!important;
                     }
                 }
+            }
+        }
+    }
+
+    &.#{$theme-cute-noborder}{
+        .#{$prefix}-calendar-table{
+            td{
+                border:0;
+                &.#{$prefix}-calendar-disabled{
+                    background-color: #fff;
+                }
+            }
+        }
+    }
+
+    &.#{$size-sm}{
+        .#{$prefix}-calendar-action{
+            .#{$prefix}-calendar-prev,.#{$prefix}-calendar-next{
+                height: $headerHeight-sm;
+                width:$tdWidth-sm;
+                line-height: $headerHeight-sm + 10;
+            }
+            .#{$prefix}-calendar-prev-icon,.#{$prefix}-calendar-next-icon{
+                width: 20px;
+                height: 20px;
+            }
+            .#{$prefix}-calendar-prev-icon{
+                background:url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAAAq0lEQVQ4T63UUQ1CMQyF4f84QAIoAAeAMxyBA8ABEsABKChZMhJys921hb33y9qdVfz5KOqZ2QI4AldJh2l9CKzYGdgAD0nLNDjBXsBO0i0FerGCD1uOYEMwis2CGawLZrE58AJsge5r9vLbfBQz+4BPYN+KRxQsv6GgayCEdmNT5xhGZ3OYQb3Bdt90CJbhR27qAiOoG2ygd0mr1Lb5Lqrtn0qsfl6wnu3+Bo81aBXpVs9jAAAAAElFTkSuQmCC') no-repeat;
+            }
+            .#{$prefix}-calendar-next-icon{
+                background: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAABmSURBVDhP7c/BDYAgDEDRjuAojMhmsoFuoBvoBK0fQ7xLGy/yk6ZJDy8gn2RmmSnM1E6+VHUDM/YagoIksGOgf0eptHN/IIk5b84LAjwYr1xY/V8e2PtCsRrIHobVQDLYHIL5ErkAbKQmkuIeiwkAAAAASUVORK5CYII=') no-repeat;
+            }
+        }
+        .#{$prefix}-calendar-table{
+            .#{$prefix}-calendar-titles{
+                th{
+                    font-size:14px;
+                }
+            }
+            .#{$prefix}-calendar-select{
+                font-size:14px;
+            }
+            td,th{
+                height: $tdHeight-sm;
+                width: $tdWidth-sm;
+                font-size:13px;
+            }
+            td{
+                .#{$prefix}-calendar-festival,.#{$prefix}-calendar-today{
+                    font-size: 12px;
+                }
+                &.#{$prefix}-calendar-day-active{
+                    &:after{
+                        border:14px solid $thirdColor;
+                    }
+                    &:before{
+                        border:19px solid $fouthColor;
+                    }
+                }
+            }
+        }
+        .#{$prefix}-calendar-months,.#{$prefix}-calendar-years{
+            width: $daysYearsWidth-sm;
+            .#{$prefix}-calendar-month,.#{$prefix}-calendar-year{
+                width: $tdWidth-sm * 2.31;
             }
         }
     }
