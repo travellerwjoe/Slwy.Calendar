@@ -1,7 +1,7 @@
 /**
  * @preserve jquery.Slwy.Calendar.js
  * @author Joe.Wu
- * @version v1.1.2
+ * @version v1.1.3
  */
 (function (root, factory) {
     if (typeof define === 'function' && define.amd) {
@@ -328,8 +328,8 @@
         this.curPaneCount = 0 //当前面板数量
         this.Lunar = Lunar
         this.mainFestival = $.isArray(this.opts.mainFestival) && this.opts.mainFestival.length && this.opts.mainFestival || VARS.mainFestival
-        this.viewMode = VARS.modesName.indexOf(this.opts.viewMode) >= 0 ? VARS.modesName.indexOf(this.opts.viewMode) : 0
-        this.minViewMode = VARS.modesName.indexOf(this.opts.minViewMode) >= 0 ? VARS.modesName.indexOf(this.opts.minViewMode) : 0
+        this.viewMode = $.inArray(this.opts.viewMode, VARS.modesName) >= 0 ? $.inArray(this.opts.viewMode, VARS.modesName) : 0
+        this.minViewMode = $.inArray(this.opts.minViewMode, VARS.modesName) >= 0 ? $.inArray(this.opts.minViewMode, VARS.modesName) : 0
         this.theme = SETTING.theme[this.opts.theme]
         this.maxDate = this.opts.maxDate ? UTILS.isJqueryInput(this.opts.maxDate) ? UTILS.getValidDate($(this.opts.maxDate).val()) : UTILS.getValidDate(this.opts.maxDate) : null
         this.minDate = this.opts.minDate ? UTILS.isJqueryInput(this.opts.minDate) ? UTILS.getValidDate($(this.opts.minDate).val()) : UTILS.getValidDate(this.opts.minDate) : null
@@ -736,7 +736,7 @@
 
         lunarStr = sFestival || lFestival || sTerm || lDay
         festival = sFestival || lFestival || sTerm
-        mainFestival = this.mainFestival.indexOf(festival) >= 0 && festival
+        mainFestival = $.inArray(festival, this.mainFestival) >= 0 && festival
         return defaults.onlyReturnMainFestival ? mainFestival : defaults.onlyReturnFestival ? festival : lunarStr
     }
 
