@@ -1,7 +1,7 @@
 /**
  * @preserve jquery.Slwy.Calendar.js
  * @author Joe.Wu
- * @version v1.1.3
+ * @version v1.1.4
  */
 (function (root, factory) {
     if (typeof define === 'function' && define.amd) {
@@ -369,10 +369,10 @@
             this.$srcElement.on(keyupEvent, function () {
                 var val = $(this).val(),
                     date
-                if (!val) return
+                // if (!val) return
                 date = val ? new Date(UTILS.getValidDate(val)) : null
-                _this.activeDate = date.valueOf() ? date : null
-                _this.viewDate = date.valueOf() ? new Date(date) : new Date()
+                _this.activeDate = date && date.valueOf() ? date : null
+                _this.viewDate = date && date.valueOf() ? new Date(date) : new Date()
                 _this.show()
             }).on(focusEvent, function () {
                 _this.open()
