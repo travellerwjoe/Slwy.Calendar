@@ -1,7 +1,7 @@
 /**
  * @preserve jquery.Slwy.Calendar.js
  * @author Joe.Wu
- * @version v1.1.4
+ * @version v1.1.5
  */
 (function (root, factory) {
     if (typeof define === 'function' && define.amd) {
@@ -469,7 +469,11 @@
 
                 _this.activeDate = date
                 activeDateLunarInfo = new _this.Lunar(_this.activeDate)
-                callbackRes = typeof _this.opts.onChangeDate === 'function' && _this.opts.onChangeDate.call(_this, _this.activeDate, formatedDate, activeDateLunarInfo)
+                callbackRes = typeof _this.opts.onChangeDate === 'function' && _this.opts.onChangeDate.call(_this, _this.activeDate, formatedDate, activeDateLunarInfo, {
+                    close: _this.close.bind(this),
+                    open: _this.open.bind(this),
+                    formatDateTime: UTILS.formatDateTime
+                })
 
                 if (_this.$srcElement) {
                     $.each(['changeDate', changeDateEvent], function (index, item) {
@@ -478,6 +482,7 @@
                             date: _this.activeDate,
                             value: formatedDate,
                             lunarInfo: activeDateLunarInfo,
+                            formatDateTime: UTILS.formatDateTime,
                             close: _this.close.bind(_this),
                             open: _this.open.bind(_this)
                         })

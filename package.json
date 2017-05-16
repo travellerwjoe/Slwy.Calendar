@@ -1,11 +1,12 @@
 {
   "name": "jquery.slwy.calendar",
-  "version": "1.1.4",
+  "version": "1.1.5",
   "description": "slwy jquery日期插件",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "minify": "uglifyjs js/calendar.js -c -m -o dist/jquery.Slwy.Calendar.min.js --comments && uglifycss css/calendar.css > dist/jquery.Slwy.Calendar.min.css",
+    "watch": "browser-sync start --server --files \"stylesheets/*.css, *.html, js/*.js\"",
     "github": "git add * && git commit -m \"New version %npm_package_version% \": ${m}&& git tag %npm_package_version% && git push --tag origin HEAD:master && npm publish"
   },
   "repository": {
@@ -24,6 +25,7 @@
   },
   "homepage": "https://github.com/travellerwjoe/Slwy.Calendar#readme",
   "devDependencies": {
+    "browser-sync": "^2.18.11",
     "uglify-js": "^2.8.22",
     "uglifycss": "0.0.27"
   },
