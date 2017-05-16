@@ -1,7 +1,7 @@
 /**
  * @preserve jquery.Slwy.Calendar.js
  * @author Joe.Wu
- * @version v1.1.5
+ * @version v1.1.6
  */
 (function (root, factory) {
     if (typeof define === 'function' && define.amd) {
@@ -156,6 +156,7 @@
             focusEvent: 'focus.' + SETTING.prefix + '.Calendar',
             blurEvent: 'blur.' + SETTING.prefix + '.Calendar',
             keyupEvent: 'keyup.' + SETTING.prefix + '.Calendar',
+            keydownEvent: 'keydown.' + SETTING.prefix + '.Calendar',
             inputEvent: 'input.' + SETTING.prefix + '.Calendar',
             changeDateEvent: 'changeDate.' + SETTING.prefix + '.Calendar'
         },
@@ -362,11 +363,12 @@
             focusEvent = VARS.events.focusEvent,
             blurEvent = VARS.events.blurEvent,
             keyupEvent = VARS.events.keyupEvent,
+            keydownEvent = VARS.events.keydownEvent,
             inputEvent = VARS.events.inputEvent,
             changeDateEvent = VARS.events.changeDateEvent
 
         if (this.$srcElement) {
-            this.$srcElement.on(keyupEvent, function () {
+            this.$srcElement.on(keyupEvent, function (e) {
                 var val = $(this).val(),
                     date
                 // if (!val) return
@@ -374,6 +376,16 @@
                 _this.activeDate = date && date.valueOf() ? date : null
                 _this.viewDate = date && date.valueOf() ? new Date(date) : new Date()
                 _this.show()
+            }).on(keydownEvent, function (e) {
+                var keyCode = e.keyCode || e.which
+                //tab键失去焦点前
+                if (keyCode === 9) {
+                    if (!checkDateValid.call(this)) {
+                        e.preventDefault();
+                        return
+                    }
+                    _this.close()
+                }
             }).on(focusEvent, function () {
                 _this.open()
             }).on(blurEvent, function () {
@@ -382,7 +394,6 @@
 
             $(document).on(clickEvent, function (e) {
                 var $target = $(e.target)
-
                 if (!$target.is(_this.$srcElement) && !$target.closest('.' + SETTING.prefix + '-calendar').is(_this.$calender)) {
                     _this.close()
                 }
@@ -391,12 +402,14 @@
 
         //检查绑定控件的值是否是有效的可选日期，满足lte maxData && gte minDate
         function checkDateValid() {
-            if (!$(this).val()) return
+            if (!$(this).val()) return true
             var date = new Date(UTILS.getValidDate($(this).val()))
             if (!date.valueOf() || (_this.maxDate && date.valueOf() > new Date(_this.maxDate).valueOf()) || (_this.minDate && date.valueOf() < new Date(_this.minDate).valueOf())) {
                 alert(_this.opts.invalidTips);
-                $(this).val('').trigger(keyupEvent)
+                $(this).val('').trigger(keyupEvent).focus()
+                return false
             }
+            return true
         }
 
         //当minDate或maxDate是另一个元素时与其交互改变可选日期
