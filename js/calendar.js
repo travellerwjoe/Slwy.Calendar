@@ -1,7 +1,7 @@
 /**
  * @preserve jquery.Slwy.Calendar.js
  * @author Joe.Wu
- * @version v1.1.6
+ * @version v1.2.0
  */
 (function (root, factory) {
     if (typeof define === 'function' && define.amd) {
@@ -185,13 +185,15 @@
             hidden: SETTING.prefix + '-calendar-hidden',
             caret: SETTING.prefix + '-calendar-caret',
             switch: SETTING.prefix + '-calendar-switch',
-        }
+        },
+        //用于限制日期的正则，$y-$m-$d 
+        limitReg: /^\$\{((?:[yY]{1}|\d+){1}(?:[\+\-]\d+)?)\}[-\/]\$\{((?:[mM]{1}|\d+){1}(?:[\+\-]\d+)?)\}[-\/]\$\{((?:l?[dD]{1}|\d+){1}(?:[\+\-]\d+)?)\}$/
     }
 
     var UTILS = {
         //是否是页面中存在的jquery input对象
         isJqueryInput: function (selector) {
-            return $(selector).is('input')
+            return (typeof selector === 'object' && !!selector.length) || (/^[.#]{1}[\w]+$/.test(selector) && $(selector).is('input'))
         },
         //指定元素是否上是否存在指定命名空间的事件
         isEventOnNamespace: function (el, event, namespace) {
@@ -332,9 +334,32 @@
         this.viewMode = $.inArray(this.opts.viewMode, VARS.modesName) >= 0 ? $.inArray(this.opts.viewMode, VARS.modesName) : 0
         this.minViewMode = $.inArray(this.opts.minViewMode, VARS.modesName) >= 0 ? $.inArray(this.opts.minViewMode, VARS.modesName) : 0
         this.theme = SETTING.theme[this.opts.theme]
-        this.maxDate = this.opts.maxDate ? UTILS.isJqueryInput(this.opts.maxDate) ? UTILS.getValidDate($(this.opts.maxDate).val()) : UTILS.getValidDate(this.opts.maxDate) : null
-        this.minDate = this.opts.minDate ? UTILS.isJqueryInput(this.opts.minDate) ? UTILS.getValidDate($(this.opts.minDate).val()) : UTILS.getValidDate(this.opts.minDate) : null
+        this.maxDate = null
+        this.minDate = null
         this.size = SETTING.size[this.opts.size]
+
+        $.each(['minDate', 'maxDate'], function (i, date) {
+            if (this.opts[date]) {
+                var matches
+                if (typeof this.opts[date] === 'string' && (matches = this.opts[date].match(VARS.limitReg))) {
+                    var matchY = matches[1],
+                        matchM = matches[2],
+                        matchD = matches[3],
+                        y = this.now.getFullYear(),
+                        m = this.now.getMonth() + 1,
+                        d = this.now.getDate()
+                    matchY = eval(matchY.replace(/y/gi, y))
+                    matchM = eval(matchM.replace(/m/gi, m))
+                    matchD = eval(matchD.replace(/ld/gi, UTILS.getDaysOfYearMonth(y, m - 1))).toString()
+                    matchD = eval(matchD.replace(/d/gi, d))
+                    this[date] = new Date(matchY, matchM - 1, matchD)
+                } else if (UTILS.isJqueryInput(this.opts[date])) {
+                    this[date] = UTILS.getValidDate($(this.opts[date]).val())
+                } else {
+                    this[date] = UTILS.getValidDate(this.opts[date])
+                }
+            }
+        }.bind(this))
 
         if (this.theme) {
             this.$calender.addClass(SETTING.prefix + '-calendar-' + this.theme)
@@ -368,7 +393,7 @@
             changeDateEvent = VARS.events.changeDateEvent
 
         if (this.$srcElement) {
-            this.$srcElement.on(keyupEvent, function (e) {
+            this.$srcElement.on(keyupEvent, function () {
                 var val = $(this).val(),
                     date
                 // if (!val) return
@@ -467,7 +492,6 @@
                 _this.show(-1)
             }
 
-
             function changeDate(date) {
                 var date = new Date(date),
                     formatedDate = UTILS.formatDateTime(date, _this.opts.dateFormat),
@@ -509,7 +533,6 @@
             }
         })
 
-
         this.$calendarAction.on(clickEvent, function (e) {
             var $target = $(e.target).closest('div'),
                 prevClassName = VARS.className.prev,
@@ -533,6 +556,8 @@
     }
 
     Calendar.prototype.renderDays = function () {
+        var minDate = this.minDate,
+            maxDate = this.maxDate
         this.$calenderDays.html('');
         this.curPaneCount = 0;
         (function renderTable() {
@@ -547,10 +572,8 @@
                 prevMonthDays = UTILS.getDaysOfYearMonth(prevMonthDateY, prevMonthDateM),
                 //下月
                 nextMonthDate,
-                minDate = this.minDate,
-                maxDate = this.maxDate,
-                $table = $(SETTING.getTemplate('table')),
                 prevMonthDateCount = nextMonthDateCount = 0,
+                $table = $(SETTING.getTemplate('table')),
                 daysHtml = "",
                 tr = ''
 

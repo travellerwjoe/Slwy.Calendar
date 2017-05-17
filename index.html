@@ -19,7 +19,7 @@
 
 <body>
     <input type="text" id="date" placeholder="点击展开日历">
-    <input type="text" id="date2" placeholder="点击展开日历" value="1994-01-25">
+    <input type="text" id="date2" placeholder="点击展开日历">
     <script src="js/jquery.1.8.3.min.js"></script>
     <script src="dist/jquery.slwy.calendar.min.js"></script>
     <!--<script src="js/calendar.js"></script>-->
@@ -58,8 +58,8 @@
             // highlightWeek: false,
             // minDate: '2017-04-10',
             // minDate: new Date(),
-            minDate: '1900-01-01',
-            maxDate: '2017-5-30',
+            minDate: '${y}-${m}-${d+1}',
+            maxDate: '${y}-${12}-${ld}',
             theme: 'THEME_CUTE_NOBORDER',
             size: 'sm',
             // viewMode:'years',
