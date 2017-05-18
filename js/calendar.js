@@ -1,7 +1,7 @@
 /**
  * @preserve jquery.Slwy.Calendar.js
  * @author Joe.Wu
- * @version v1.2.0
+ * @version v1.2.1
  */
 (function (root, factory) {
     if (typeof define === 'function' && define.amd) {
@@ -789,21 +789,23 @@
         this.$calender
             .width(this.paneCount > 3 ? tableWidth * 3 : tableWidth * this.paneCount)
         // .height(Math.ceil(this.paneCount / 3) * tableHeight)
+        this.resetCalendarPos()
+    }
 
-        if (this.$srcElement) {
-            var offset = this.$srcElement.offset(),
-                srcElH = this.$srcElement.outerHeight()
-            this.$calender.css({
-                left: offset.left,
-                top: offset.top + srcElH,
-                position: 'absolute',
-                zIndex: 9999
-            })
-        }
-
+    Calendar.prototype.resetCalendarPos = function () {
+        if (!this.$srcElement) return
+        var offset = this.$srcElement.offset(),
+            srcElH = this.$srcElement.outerHeight()
+        this.$calender.css({
+            left: offset.left,
+            top: offset.top + srcElH,
+            position: 'absolute',
+            zIndex: 99999
+        })
     }
 
     Calendar.prototype.open = function () {
+        this.resetCalendarPos()
         this.$calender.removeClass(VARS.className.hidden).show()
         //设置viewDate与activeDate为控件的值
         if (this.$srcElement && this.$srcElement.val()) {
