@@ -1,7 +1,7 @@
 /**
  * @preserve jquery.Slwy.Calendar.js
  * @author Joe.Wu
- * @version v1.2.2
+ * @version v1.2.3
  */
 (function (root, factory) {
     if (typeof define === 'function' && define.amd) {
@@ -442,7 +442,7 @@
             var changeOtherDate = function (e) {
                 if (e.type === "changeDate" && e.namespace !== 'Calendar.' + SETTING.prefix) return
                 _this[date] = UTILS.getValidDate(e.date || $(this).val())
-                _this.viewDate = _this.$srcElement && this.$srcElement.val() ? new Date(this.$srcElement.val()) : new Date()
+                _this.viewDate = _this.$srcElement && _this.$srcElement.val() ? new Date(_this.$srcElement.val()) : new Date()
                 _this.activeDate = _this.$srcElement ? UTILS.getValidDate(_this.$srcElement.val()) : null
                 _this.renderDays()
             }
