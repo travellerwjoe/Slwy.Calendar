@@ -165,8 +165,9 @@ $daysYearsWidth-sm:280px;
                 position: absolute;
                 display: inline-block;
                 border-radius: 100%;
-                top: 0;
-                bottom: 0;
+                // top: 50%;
+                top:0;
+                // bottom: 0;
                 left: 0;
                 right: 0;
                 margin:auto;
@@ -176,10 +177,14 @@ $daysYearsWidth-sm:280px;
             &:after{
                 border:16px solid $thirdColor;
                 z-index: -1;
+                // margin:-16px auto;
+                top:8px;
             }
             &:before{
                 border:21px solid $fouthColor;
                 z-index: -2;
+                top:3px;
+                // margin:-21px auto;
             }
         }
         &.#{$prefix}-calendar-disabled{
@@ -251,7 +256,7 @@ $daysYearsWidth-sm:280px;
                     color:$mainColor!important;
                     // font-weight: bold;
                     &:before{
-                        content:initial;
+                        content:none;
                     }
                     &:after{
                         height: 3.5px;

@@ -169,7 +169,7 @@
             day: SETTING.prefix + '-calendar-day',
             days: SETTING.prefix + '-calendar-days',
             old: SETTING.prefix + '-calendar-old',
-            new: SETTING.prefix + '-calendar-new',
+            _new: SETTING.prefix + '-calendar-new',
             week: SETTING.prefix + '-calendar-week',
             month: SETTING.prefix + '-calendar-month',
             months: SETTING.prefix + '-calendar-months',
@@ -184,7 +184,7 @@
             action: SETTING.prefix + '-calendar-action',
             hidden: SETTING.prefix + '-calendar-hidden',
             caret: SETTING.prefix + '-calendar-caret',
-            switch: SETTING.prefix + '-calendar-switch',
+            _switch: SETTING.prefix + '-calendar-switch',
         },
         //用于限制日期的正则，$y-$m-$d 
         limitReg: /^\$\{((?:[yY]{1}|\d+){1}(?:[\+\-]\d+)?)\}[-\/]\$\{((?:[mM]{1}|\d+){1}(?:[\+\-]\d+)?)\}[-\/]\$\{((?:l?[dD]{1}|\d+){1}(?:[\+\-]\d+)?)\}$/
@@ -338,7 +338,7 @@
         this.minDate = null
         this.size = SETTING.size[this.opts.size]
 
-        $.each(['minDate', 'maxDate'], function (i, date) {
+        $.each(['minDate', 'maxDate'], $.proxy(function (i, date) {
             if (this.opts[date]) {
                 var matches
                 if (typeof this.opts[date] === 'string' && (matches = this.opts[date].match(VARS.limitReg))) {
@@ -359,7 +359,7 @@
                     this[date] = UTILS.getValidDate(this.opts[date])
                 }
             }
-        }.bind(this))
+        }, this))
 
         if (this.theme) {
             this.$calender.addClass(SETTING.prefix + '-calendar-' + this.theme)
@@ -459,7 +459,7 @@
                 disabledClassName = VARS.className.disabled,
                 dateAttr = SETTING.prefix + '-calendar-date'
 
-            if ($target.is('th') && $target.hasClass(VARS.className.switch)) {
+            if ($target.is('th') && $target.hasClass(VARS.className._switch)) {
                 _this.show(1)
             } else if ($target.is('td') && $target.hasClass(VARS.className.day)) {
                 if ($target.hasClass(disabledClassName)) {
@@ -507,8 +507,8 @@
                 _this.activeDate = date
                 activeDateLunarInfo = new _this.Lunar(_this.activeDate)
                 callbackRes = typeof _this.opts.onChangeDate === 'function' && _this.opts.onChangeDate.call(_this, _this.activeDate, formatedDate, activeDateLunarInfo, {
-                    close: _this.close.bind(this),
-                    open: _this.open.bind(this),
+                    close: $.proxy(_this.close, _this),
+                    open: $.proxy(_this.open, _this),
                     formatDateTime: UTILS.formatDateTime
                 })
 
@@ -520,8 +520,8 @@
                             value: formatedDate,
                             lunarInfo: activeDateLunarInfo,
                             formatDateTime: UTILS.formatDateTime,
-                            close: _this.close.bind(_this),
-                            open: _this.open.bind(_this)
+                            close: $.proxy(_this.close, _this),
+                            open: $.proxy(_this.open, _this)
                         })
                     })
                     //如果onChangeDate回调未声明并且未在jqueryDom对象上绑定无命名空间的onChangeDate事件或者onChangeDate申明并调用返回的结果为true执行默认操作
@@ -600,7 +600,7 @@
                     prevMonthDateCount++
                 } else if (prevY > viewYear || (prevY === viewYear && prevM > viewMonth)) {
                     if (this.opts.onlyThisMonth) isShow = false
-                    className += ' ' + VARS.className.new
+                    className += ' ' + VARS.className._new
                     nextMonthDateCount++
                 }
 
@@ -702,7 +702,7 @@
                 year = startYear + i,
                 attr = SETTING.prefix + '-calendar-date="' + year + '"'
             i === -1 && (clsName += ' ' + VARS.className.old)
-            i === 10 && (clsName += ' ' + VARS.className.new)
+            i === 10 && (clsName += ' ' + VARS.className._new)
             year === activeYear && (clsName += ' ' + VARS.className.active)
             html += '<span class="' + clsName + '" ' + attr + '>' +
                 year +
