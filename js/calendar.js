@@ -1,7 +1,7 @@
 /**
  * @preserve jquery.Slwy.Calendar.js
  * @author Joe.Wu
- * @version v1.3.0
+ * @version v1.3.1
  */
 (function (root, factory) {
     if (typeof define === 'function' && define.amd) {
@@ -361,8 +361,10 @@
                     var selector = matches[2],
                         limitOpts = eval('(' + matches[3] + ')')
                     if (UTILS.isJqueryInput(selector)) {
+                        var $selector = $(selector),
+                            d = UTILS.getValidDate($(selector).val())
                         this.opts[date] = $(selector)
-                        this[date] = UTILS.getValidDate($(selector).val())
+                        this[date] = d.valueOf() ? this.getLimitDate(UTILS.getValidDate($(selector).val()), limitOpts) : d
                         this[date + 'LimitOpts'] = limitOpts
                     }
                 } else if (UTILS.isJqueryInput(this.opts[date])) {
