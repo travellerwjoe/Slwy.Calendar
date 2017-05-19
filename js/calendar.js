@@ -1,7 +1,7 @@
 /**
  * @preserve jquery.Slwy.Calendar.js
  * @author Joe.Wu
- * @version v1.2.3
+ * @version v1.3.0
  */
 (function (root, factory) {
     if (typeof define === 'function' && define.amd) {
@@ -187,7 +187,9 @@
             _switch: SETTING.prefix + '-calendar-switch',
         },
         //用于限制日期的正则，$y-$m-$d 
-        limitReg: /^\$\{((?:[yY]{1}|\d+){1}(?:[\+\-]\d+)?)\}[-\/]\$\{((?:[mM]{1}|\d+){1}(?:[\+\-]\d+)?)\}[-\/]\$\{((?:l?[dD]{1}|\d+){1}(?:[\+\-]\d+)?)\}$/
+        limitReg: /^\$\{((?:[yY]{1}|\d+){1}(?:[\+\-]\d+)?)\}[-\/]\$\{((?:[mM]{1}|\d+){1}(?:[\+\-]\d+)?)\}[-\/]\$\{((?:l?[dD]{1}|\d+){1}(?:[\+\-]\d+)?)\}$/,
+        //提取参数正则，参数用于动态限制日期
+        pickLimitArgReg: /^\$\{(['"]([.#]\w+)['"](?:,(\{.*\}))*)\}$/
     }
 
     var UTILS = {
@@ -336,6 +338,8 @@
         this.theme = SETTING.theme[this.opts.theme]
         this.maxDate = null
         this.minDate = null
+        this.maxDateLimitOpts = null //动态限制的最大日期选项 {d:1,m:-1,y} || {d:true} || {ld:true}等
+        this.minDateLimitOpts = null
         this.size = SETTING.size[this.opts.size]
 
         $.each(['minDate', 'maxDate'], $.proxy(function (i, date) {
@@ -353,6 +357,14 @@
                     matchD = eval(matchD.replace(/ld/gi, UTILS.getDaysOfYearMonth(y, m - 1))).toString()
                     matchD = eval(matchD.replace(/d/gi, d))
                     this[date] = new Date(matchY, matchM - 1, matchD)
+                } else if (typeof this.opts[date] === 'string' && (matches = this.opts[date].match(VARS.pickLimitArgReg))) {
+                    var selector = matches[2],
+                        limitOpts = eval('(' + matches[3] + ')')
+                    if (UTILS.isJqueryInput(selector)) {
+                        this.opts[date] = $(selector)
+                        this[date] = UTILS.getValidDate($(selector).val())
+                        this[date + 'LimitOpts'] = limitOpts
+                    }
                 } else if (UTILS.isJqueryInput(this.opts[date])) {
                     this[date] = UTILS.getValidDate($(this.opts[date]).val())
                 } else {
@@ -375,6 +387,7 @@
         } else {
             this.$calender.find('.' + VARS.className.caret).remove()
         }
+
         this.init()
     }
     Calendar.prototype.init = function () {
@@ -391,6 +404,18 @@
             keydownEvent = VARS.events.keydownEvent,
             inputEvent = VARS.events.inputEvent,
             changeDateEvent = VARS.events.changeDateEvent
+
+        //检查绑定控件的值是否是有效的可选日期，满足lte maxData && gte minDate
+        function checkDateValid() {
+            if (!$(this).val()) return true
+            var date = new Date(UTILS.getValidDate($(this).val()))
+            if (!date.valueOf() || (_this.maxDate && date.valueOf() > new Date(_this.maxDate).valueOf()) || (_this.minDate && date.valueOf() < new Date(_this.minDate).valueOf())) {
+                alert(_this.opts.invalidTips);
+                $(this).val('').trigger(keyupEvent).focus()
+                return false
+            }
+            return true
+        }
 
         if (this.$srcElement) {
             this.$srcElement.on(keyupEvent, function () {
@@ -425,29 +450,18 @@
             })
         }
 
-        //检查绑定控件的值是否是有效的可选日期，满足lte maxData && gte minDate
-        function checkDateValid() {
-            if (!$(this).val()) return true
-            var date = new Date(UTILS.getValidDate($(this).val()))
-            if (!date.valueOf() || (_this.maxDate && date.valueOf() > new Date(_this.maxDate).valueOf()) || (_this.minDate && date.valueOf() < new Date(_this.minDate).valueOf())) {
-                alert(_this.opts.invalidTips);
-                $(this).val('').trigger(keyupEvent).focus()
-                return false
-            }
-            return true
-        }
-
         //当minDate或maxDate是另一个元素时与其交互改变可选日期
         $.each(['minDate', 'maxDate'], function (index, date) {
-            var changeOtherDate = function (e) {
-                if (e.type === "changeDate" && e.namespace !== 'Calendar.' + SETTING.prefix) return
-                _this[date] = UTILS.getValidDate(e.date || $(this).val())
-                _this.viewDate = _this.$srcElement && _this.$srcElement.val() ? new Date(_this.$srcElement.val()) : new Date()
-                _this.activeDate = _this.$srcElement ? UTILS.getValidDate(_this.$srcElement.val()) : null
-                _this.renderDays()
-            }
             if (_this.opts[date] && UTILS.isJqueryInput(_this.opts[date])) {
-                var $date = $(_this.opts[date])
+                var $date = $(_this.opts[date]),
+                    //改变与另一个日历交互的minDate和maxDate日期
+                    changeOtherDate = function (e) {
+                        if (e.type === "changeDate" && e.namespace !== 'Calendar.' + SETTING.prefix) return
+                        _this[date] = _this.getLimitDate(UTILS.getValidDate(e.date || $(this).val()), _this[date + 'LimitOpts'])
+                        _this.viewDate = _this.$srcElement && _this.$srcElement.val() ? new Date(_this.$srcElement.val()) : new Date()
+                        _this.activeDate = _this.$srcElement ? UTILS.getValidDate(_this.$srcElement.val()) : null
+                        _this.renderDays()
+                    }
                 $date.on(changeDateEvent, changeOtherDate).on(keyupEvent + ' ' + inputEvent, changeOtherDate)
             }
         })
@@ -820,6 +834,41 @@
 
     Calendar.prototype.close = function () {
         this.$calender.hide()
+    }
+
+    //获取动态限制的日期
+    Calendar.prototype.getLimitDate = function (date, opts) {
+        if (!opts) return date
+        var optD = opts.d || opts.D || opts.day || opts.Day,
+            optM = opts.m || opts.M || opts.month || opts.Month,
+            optY = opts.y || opts.Y || opts.year || opts.Year,
+            optLD = opts.ld || opts.LD,
+            optLM = opts.lm || opts.LM,
+            d = date.getDate(),
+            m = date.getMonth(),
+            y = date.getFullYear()
+
+        if (!date) return
+        if (typeof optD === 'number') {
+            date.setDate(d + parseInt(optD))
+        } else if (typeof optD === 'boolean' && optD) {
+            date.setDate(1)
+        } else if (typeof optLD === 'boolean' && optLD) {
+            date.setDate(UTILS.getDaysOfYearMonth(y, m))
+        }
+        if (typeof optM === 'number') {
+            date.setMonth(m + parseInt(optM))
+        } else if (typeof optM === 'boolean' && optM) {
+            date.setMonth(0)
+            date.setDate(1)
+        } else if (typeof optLM === 'boolean' && optLM) {
+            date.setMonth(11)
+            date.setDate(UTILS.getDaysOfYearMonth(y, m))
+        }
+        if (typeof optY === 'number') {
+            date.setYear(y + parseInt(optY))
+        }
+        return date
     }
 
     function Lunar(sDate) {

@@ -22,8 +22,8 @@
     <input type="text" id="date" placeholder="点击展开日历">
     <input type="text" id="date2" placeholder="点击展开日历">
     <script src="js/jquery.1.8.3.min.js"></script>
-    <script src="dist/jquery.slwy.calendar.min.js"></script>
-    <!--<script src="js/calendar.js"></script>-->
+    <!--<script src="dist/jquery.slwy.calendar.min.js"></script>-->
+    <script src="js/calendar.js"></script>
     <script>
         var date1 = $('#date').SlwyCalendar({
             locale: 'zh_CN',
@@ -43,7 +43,7 @@
             // }
             // maxDate: new Date()
         })
-        .on('changeDate', function (e) {
+        /*.on('changeDate', function (e) {
             var date = new Date(e.date),
                 dateStr
             date.setDate(date.getDate() + 1)
@@ -54,7 +54,7 @@
             e.close()
             // e.close()
             // console.log(e.date, e.value)
-        })
+        })*/
         $('#date2').SlwyCalendar({
             locale: 'zh_CN',
             // locale: 'en_US',
@@ -67,8 +67,10 @@
             // highlightWeek: false,
             // minDate: '2017-04-10',
             // minDate: new Date(),
-            minDate: '#date',
+            // minDate: '${"#date",{m:true}}',
+            minDate: '${"#date",{d:1}}',
             maxDate: '${y}-${12}-${ld}',
+            // maxDate: '${"#date",{lm:true}}',
             theme: 'THEME_CUTE_NOBORDER',
             size: 'sm',
             // viewMode:'years',
