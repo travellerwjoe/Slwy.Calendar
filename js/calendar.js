@@ -1,7 +1,7 @@
 /**
  * @preserve jquery.Slwy.Calendar.js
  * @author Joe.Wu
- * @version v1.3.3
+ * @version v1.3.4
  */
 (function (root, factory) {
     if (typeof define === 'function' && define.amd) {
@@ -469,6 +469,7 @@
         })
 
         this.$calendar.on(clickEvent, function (e) {
+            e.stopPropagation()
             var $target = $(e.target).closest('span, td, th'),
                 // activeClassName = VARS.className.active,
                 activeDayClassName = VARS.className.activeDay,
