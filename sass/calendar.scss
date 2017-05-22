@@ -116,6 +116,7 @@ $daysYearsWidth-sm:280px;
     }
     .#{$prefix}-calendar-table{
         // width: 100%;
+        width:$tdWidth * 7;
         background-color: transparent;
         empty-cells: show;
         border-collapse: collapse;
@@ -197,7 +198,6 @@ $daysYearsWidth-sm:280px;
         width: $daysYearsWidth;
         table{
             width:100%;
-
         }
         .#{$prefix}-calendar-month,.#{$prefix}-calendar-year{
             display: block;
@@ -306,6 +306,7 @@ $daysYearsWidth-sm:280px;
             }
         }
         .#{$prefix}-calendar-table{
+            width:$tdHeight-sm * 7;
             .#{$prefix}-calendar-titles{
                 th{
                     font-size:14px;

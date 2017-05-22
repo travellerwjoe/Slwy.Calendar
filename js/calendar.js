@@ -570,6 +570,8 @@
             }
 
         })
+
+        $(window).on('resize', $.proxy(this.resetCalendarStyle, this))
     }
 
     Calendar.prototype.renderDays = function () {
@@ -703,7 +705,6 @@
         }
         this.$calendarMonths.find('tbody td').first().html(html)
         this.$calendarMonths.find('.' + VARS.className.select).text(viewDate.getFullYear())
-
     }
 
     Calendar.prototype.renderYears = function () {
