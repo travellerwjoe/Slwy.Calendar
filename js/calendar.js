@@ -1,7 +1,7 @@
 /**
  * @preserve jquery.Slwy.Calendar.js
  * @author Joe.Wu
- * @version v1.3.4
+ * @version v1.3.5
  */
 (function (root, factory) {
     if (typeof define === 'function' && define.amd) {
@@ -571,7 +571,7 @@
 
         })
 
-        $(window).on('resize', $.proxy(this.resetCalendarStyle, this))
+        $(window).on('resize', $.proxy(this.resetCalendarPos, this))
     }
 
     Calendar.prototype.renderDays = function () {
