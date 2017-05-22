@@ -1,7 +1,7 @@
 /**
  * @preserve jquery.Slwy.Calendar.js
  * @author Joe.Wu
- * @version v1.3.1
+ * @version v1.3.2
  */
 (function (root, factory) {
     if (typeof define === 'function' && define.amd) {
@@ -532,9 +532,9 @@
                     $.each(['changeDate', changeDateEvent], function (index, item) {
                         _this.$srcElement.trigger({
                             type: item,
-                            date: _this.activeDate,
+                            date: new Date(_this.activeDate),
                             value: formatedDate,
-                            lunarInfo: activeDateLunarInfo,
+                            lunarInfo: $.extend(true, {}, activeDateLunarInfo),
                             formatDateTime: UTILS.formatDateTime,
                             close: $.proxy(_this.close, _this),
                             open: $.proxy(_this.open, _this)
