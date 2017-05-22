@@ -1,7 +1,7 @@
 /**
  * @preserve jquery.Slwy.Calendar.js
  * @author Joe.Wu
- * @version v1.3.2
+ * @version v1.3.3
  */
 (function (root, factory) {
     if (typeof define === 'function' && define.amd) {
@@ -319,11 +319,11 @@
         }
         this.opts = $.extend(true, dfts, opts)
         var template = SETTING.getTemplate()
-        this.$calender = $(template).appendTo('body')
-        this.$calenderDays = this.$calender.find('.' + VARS.className.days)
-        this.$calenderMonths = this.$calender.find('.' + VARS.className.months)
-        this.$calenderYears = this.$calender.find('.' + VARS.className.years)
-        this.$calendarAction = this.$calender.find('.' + VARS.className.action)
+        this.$calendar = $(template).appendTo('body')
+        this.$calendarDays = this.$calendar.find('.' + VARS.className.days)
+        this.$calendarMonths = this.$calendar.find('.' + VARS.className.months)
+        this.$calendarYears = this.$calendar.find('.' + VARS.className.years)
+        this.$calendarAction = this.$calendar.find('.' + VARS.className.action)
         this.$srcElement = srcElement && $(srcElement)//触发元素
 
         this.now = new Date()
@@ -376,18 +376,18 @@
         }, this))
 
         if (this.theme) {
-            this.$calender.addClass(SETTING.prefix + '-calendar-' + this.theme)
+            this.$calendar.addClass(SETTING.prefix + '-calendar-' + this.theme)
         }
 
         if (this.size) {
-            this.$calender.addClass(SETTING.prefix + '-calendar-' + this.size)
+            this.$calendar.addClass(SETTING.prefix + '-calendar-' + this.size)
         }
 
         //如有触发元素隐藏日历待触发时显示
         if (this.$srcElement) {
-            this.$calender.addClass(VARS.className.hidden)
+            this.$calendar.addClass(VARS.className.hidden)
         } else {
-            this.$calender.find('.' + VARS.className.caret).remove()
+            this.$calendar.find('.' + VARS.className.caret).remove()
         }
 
         this.init()
@@ -446,7 +446,7 @@
 
             $(document).on(clickEvent, function (e) {
                 var $target = $(e.target)
-                if (!$target.is(_this.$srcElement) && !$target.closest('.' + SETTING.prefix + '-calendar').is(_this.$calender)) {
+                if (!$target.is(_this.$srcElement) && !$target.closest('.' + SETTING.prefix + '-calendar').is(_this.$calendar)) {
                     _this.close()
                 }
             })
@@ -468,7 +468,7 @@
             }
         })
 
-        this.$calender.on(clickEvent, function (e) {
+        this.$calendar.on(clickEvent, function (e) {
             var $target = $(e.target).closest('span, td, th'),
                 // activeClassName = VARS.className.active,
                 activeDayClassName = VARS.className.activeDay,
@@ -517,7 +517,7 @@
                     return
                 }
 
-                _this.$calenderDays.find('td').removeClass(activeDayClassName)
+                _this.$calendarDays.find('td').removeClass(activeDayClassName)
                 $target.addClass(activeDayClassName)
 
                 _this.activeDate = date
@@ -574,7 +574,7 @@
     Calendar.prototype.renderDays = function () {
         var minDate = this.minDate,
             maxDate = this.maxDate
-        this.$calenderDays.html('');
+        this.$calendarDays.html('');
         this.curPaneCount = 0;
         (function renderTable() {
             var viewDate = this.viewDate,
@@ -655,7 +655,7 @@
 
             $table.find('tbody').html(daysHtml)
             $table.find('.' + VARS.className.select).text(SETTING.locales[this.opts.locale].getYearMonth(viewDate.getFullYear(), viewDate.getMonth()))
-            this.$calenderDays.append($table)
+            this.$calendarDays.append($table)
 
             this.curPaneCount++
             if (this.curPaneCount < this.paneCount) {
@@ -700,8 +700,8 @@
                 SETTING.locales[this.opts.locale].months[i] +
                 '</span>'
         }
-        this.$calenderMonths.find('tbody td').first().html(html)
-        this.$calenderMonths.find('.' + VARS.className.select).text(viewDate.getFullYear())
+        this.$calendarMonths.find('tbody td').first().html(html)
+        this.$calendarMonths.find('.' + VARS.className.select).text(viewDate.getFullYear())
 
     }
 
@@ -725,8 +725,8 @@
                 '</span>'
         }
 
-        this.$calenderYears.find('tbody td').first().html(html)
-        this.$calenderYears.find('.' + VARS.className.select).text(startYear + '-' + (startYear + 9))
+        this.$calendarYears.find('tbody td').first().html(html)
+        this.$calendarYears.find('.' + VARS.className.select).text(startYear + '-' + (startYear + 9))
     }
 
     Calendar.prototype.show = function (level) {
@@ -738,7 +738,7 @@
         this.paneCount = this.viewMode > 0 ? 1 : this.opts.paneCount
 
         this[renderFunc].call(this)
-        this.$calender.find('>div').hide().
+        this.$calendar.find('>div').hide().
             filter('.' + SETTING.prefix + '-calendar-' + VARS.modes[this.viewMode].className).show()
         this.resetCalendarStyle()
     };
@@ -798,11 +798,11 @@
     }
 
     Calendar.prototype.resetCalendarStyle = function () {
-        var $table = this['$calender' + VARS.modes[this.viewMode].name].find('table'),
+        var $table = this['$calendar' + VARS.modes[this.viewMode].name].find('table'),
             // tableHeight = $table.height(),
             tableWidth = $table.width()
 
-        this.$calender
+        this.$calendar
             .width(this.paneCount > 3 ? tableWidth * 3 : tableWidth * this.paneCount)
         // .height(Math.ceil(this.paneCount / 3) * tableHeight)
         this.resetCalendarPos()
@@ -812,7 +812,7 @@
         if (!this.$srcElement) return
         var offset = this.$srcElement.offset(),
             srcElH = this.$srcElement.outerHeight()
-        this.$calender.css({
+        this.$calendar.css({
             left: offset.left,
             top: offset.top + srcElH,
             position: 'absolute',
@@ -822,7 +822,7 @@
 
     Calendar.prototype.open = function () {
         this.resetCalendarPos()
-        this.$calender.removeClass(VARS.className.hidden).show()
+        this.$calendar.removeClass(VARS.className.hidden).show()
         //设置viewDate与activeDate为控件的值
         if (this.$srcElement && this.$srcElement.val()) {
             var val = this.$srcElement.val()
@@ -835,7 +835,7 @@
     }
 
     Calendar.prototype.close = function () {
-        this.$calender.hide()
+        this.$calendar.hide()
     }
 
     //获取动态限制的日期
