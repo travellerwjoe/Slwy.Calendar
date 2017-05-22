@@ -31,6 +31,7 @@ $daysYearsWidth-sm:280px;
     // height: 382px;
     color: #555;
     position: relative;
+    z-index: 99999;
     // visibility: hidden;
     display: none;
     &.#{$prefix}-calendar-nocaret{

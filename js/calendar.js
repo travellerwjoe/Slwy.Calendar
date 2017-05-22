@@ -821,8 +821,7 @@
         this.$calendar.css({
             left: offset.left,
             top: offset.top + srcElH,
-            position: 'absolute',
-            zIndex: 99999
+            position: 'absolute'
         })
     }
 
