@@ -68,12 +68,13 @@
             // highlightWeek: false,
             // minDate: '2017-04-10',
             // minDate: new Date(),
-            minDate: '${"#date"}',
+            minDate: '${"#date",{m:true}}',
             // minDate: '${"#date",{d:1}}',
             // maxDate: '${y}-${12}-${ld}',
             maxDate: '${"#date",{ld:true}}',
             theme: 'THEME_CUTE_NOBORDER',
             size: 'sm',
+            caret:false
             // viewMode:'years',
             // minViewMode:'days'
             /*onChangeDate: function (date, value, lunarInfo) {

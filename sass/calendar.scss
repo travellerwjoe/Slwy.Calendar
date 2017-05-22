@@ -32,7 +32,10 @@ $daysYearsWidth-sm:280px;
     color: #555;
     position: relative;
     // visibility: hidden;
-    // display: none;
+    display: none;
+    &.#{$prefix}-calendar-nocaret{
+        margin-top:2px;
+    }
     &.#{$prefix}-calendar-hidden{
         visibility: hidden
     }
@@ -238,9 +241,23 @@ $daysYearsWidth-sm:280px;
     }
     
     &.#{$theme-cute},&.#{$theme-cute-noborder}{
-        border-radius:10px;
+        border-radius:3px;
         padding-bottom: 0;
         .#{$prefix}-calendar-table{
+            &:first-of-type{
+                .#{$prefix}-calendar-header{
+                    th:first-of-type{
+                        border-top-left-radius: 3px;
+                    }
+                }
+            }
+            &:last-of-type{
+                .#{$prefix}-calendar-header{
+                    th:last-of-type{
+                        border-top-right-radius: 3px;
+                    }
+                }
+            }
             .#{$prefix}-calendar-titles{
                 background-color: $mainColor;
                 th{

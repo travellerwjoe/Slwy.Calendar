@@ -1,7 +1,7 @@
 /**
  * @preserve jquery.Slwy.Calendar.js
  * @author Joe.Wu
- * @version v1.3.5
+ * @version v1.3.6
  */
 (function (root, factory) {
     if (typeof define === 'function' && define.amd) {
@@ -182,7 +182,8 @@
             lunar: SETTING.prefix + '-calendar-lunar',
             festival: SETTING.prefix + '-calendar-festival',
             action: SETTING.prefix + '-calendar-action',
-            hidden: SETTING.prefix + '-calendar-hidden',
+            // hidden: SETTING.prefix + '-calendar-hidden',
+            nocaret: SETTING.prefix + '-calendar-nocaret',
             caret: SETTING.prefix + '-calendar-caret',
             _switch: SETTING.prefix + '-calendar-switch',
         },
@@ -316,6 +317,7 @@
             theme: null,
             invalidTips: '该日期不可选',
             size: null,//日历大小，sm 与 默认
+            caret: true,
         }
         this.opts = $.extend(true, dfts, opts)
         var template = SETTING.getTemplate()
@@ -383,12 +385,14 @@
             this.$calendar.addClass(SETTING.prefix + '-calendar-' + this.size)
         }
 
-        //如有触发元素隐藏日历待触发时显示
-        if (this.$srcElement) {
-            this.$calendar.addClass(VARS.className.hidden)
-        } else {
-            this.$calendar.find('.' + VARS.className.caret).remove()
+        if (!this.$srcElement || !this.opts.caret) {
+            this.$calendar.addClass(VARS.className.nocaret).find('.' + VARS.className.caret).remove()
         }
+
+        //如有触发元素隐藏日历待触发时显示
+        /*if (this.$srcElement) {
+            this.$calendar.addClass(VARS.className.hidden)
+        }*/
 
         this.init()
     }
@@ -824,7 +828,7 @@
 
     Calendar.prototype.open = function () {
         this.resetCalendarPos()
-        this.$calendar.removeClass(VARS.className.hidden).show()
+        this.$calendar.show()
         //设置viewDate与activeDate为控件的值
         if (this.$srcElement && this.$srcElement.val()) {
             var val = this.$srcElement.val()
