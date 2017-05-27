@@ -13,21 +13,25 @@
     <meta http-equiv="expires" content="0">
     <!--网页在缓存中的过期时间为0，一旦网页过期，必须从服务器上重新订阅-->
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <!--<link rel="stylesheet" href="css/calendar.css">-->
-    <link rel="stylesheet" href="dist/jquery.slwy.calendar.min.css">
+    <link rel="stylesheet" href="css/calendar.css">
+    <!--<link rel="stylesheet" href="dist/jquery.slwy.calendar.min.css">-->
     <title>Slwy-Calendar</title>
 </head>
 
 <body>
     <input type="text" id="date" placeholder="点击展开日历">
-    <input type="text" id="date2" placeholder="点击展开日历">
+    <input type="text" id="date2" placeholder="点击展开日历" value="2017-05-31">
     <script src="js/jquery.1.8.3.min.js"></script>
     <!--<script src="dist/jquery.slwy.calendar.min.js"></script>-->
     <script src="js/calendar.js"></script>
     <script>
-        var date1 = $('#date').SlwyCalendar({
+        $.SlwyCalendar.setDefaults({
             locale: 'zh_CN',
             paneCount: 2,
+            // yearStart: 2000,
+        })
+        var date1 = $('#date').SlwyCalendar({
+            // paneCount: 2,
             onlyThisMonth: true,
             showMainFestival: true,
             // dateFormat:'yyyy/MM/dd',
@@ -35,7 +39,7 @@
             // minDate: '2017-04-10',
             minDate: new Date(),
             // maxDate: $('#date2'),
-            maxDate:'${y}-${m}-${ld}'
+            maxDate: '${y}-${m}-${ld}'
             // size:'sm'
             // onChangeDate: function (date, value, lunarInfo) {
             //     /*console.log(date, value)
@@ -59,7 +63,8 @@
         $('#date2').SlwyCalendar({
             locale: 'zh_CN',
             // locale: 'en_US',
-            paneCount: 2,
+            // paneCount: 2,
+            // paneCountOfGroup:4,
             onlyThisMonth: true,
             showMainFestival: true,
             // showFestival: true,
@@ -74,7 +79,8 @@
             maxDate: '${"#date",{ld:true}}',
             theme: 'THEME_CUTE_NOBORDER',
             size: 'sm',
-            caret:false
+            caret: false
+            // weekStart: 1
             // viewMode:'years',
             // minViewMode:'days'
             /*onChangeDate: function (date, value, lunarInfo) {

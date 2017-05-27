@@ -16,6 +16,7 @@ $tdWidth-sm:40px;
 $tdHeight-sm:40px;
 $headerHeight-sm:40px;
 $daysYearsWidth-sm:280px;
+$tableMargin:20px;
 
 
 .#{$prefix}-calendar{
@@ -67,6 +68,7 @@ $daysYearsWidth-sm:280px;
             cursor:pointer;
             -webkit-transition: background-color .3s ease-out;
             transition: background-color .3s ease-out;
+            z-index: 999;
             &:hover{
                 background-color: $hoverBg
             }
@@ -118,6 +120,17 @@ $daysYearsWidth-sm:280px;
             }
         }*/
     }
+    .#{$prefix}-calendar-table-group{
+        display: inline-block;
+        position: relative;
+        .#{$prefix}-calendar-table-group-bg{
+            background-color: $mainColor;
+            width:100%;
+            height: 48px;
+            position: absolute;
+            z-index: -1;
+        }
+    }
     .#{$prefix}-calendar-table{
         // width: 100%;
         width:$tdWidth * 7;
@@ -125,7 +138,14 @@ $daysYearsWidth-sm:280px;
         empty-cells: show;
         border-collapse: collapse;
         border-spacing: 0;
-        float:left;  
+        display: inline-block;
+        vertical-align: top;
+        margin:0 $tableMargin/2;
+        box-sizing: border-box;
+        // float:left;  
+        tbody{
+            background: #fff;
+        }
         td,th{
             text-align: center;
             font-weight: 400;
@@ -201,7 +221,9 @@ $daysYearsWidth-sm:280px;
         display: none;
         width: $daysYearsWidth;
         table{
-            width:100%;
+            display: table;
+            width:$tdHeight * 7;
+            margin:0;
         }
         .#{$prefix}-calendar-month,.#{$prefix}-calendar-year{
             display: block;
@@ -243,7 +265,10 @@ $daysYearsWidth-sm:280px;
     
     &.#{$theme-cute},&.#{$theme-cute-noborder}{
         border-radius:3px;
-        padding-bottom: 0;
+        // padding-bottom: 0;
+        .#{$prefix}-calendar-table-group-bg{
+            height: 96px;
+        }
         .#{$prefix}-calendar-table{
             &:first-of-type{
                 .#{$prefix}-calendar-header{
@@ -292,10 +317,16 @@ $daysYearsWidth-sm:280px;
                 }
             }
         }
+        &.#{$size-sm}{
+            .#{$prefix}-calendar-table-group-bg{
+                height: 80px;
+            }
+        }
     }
 
     &.#{$theme-cute-noborder}{
         .#{$prefix}-calendar-table{
+            width:$tdWidth-sm * 7;
             td{
                 border:0;
                 &.#{$prefix}-calendar-disabled{
@@ -323,8 +354,10 @@ $daysYearsWidth-sm:280px;
                 background: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAABmSURBVDhP7c/BDYAgDEDRjuAojMhmsoFuoBvoBK0fQ7xLGy/yk6ZJDy8gn2RmmSnM1E6+VHUDM/YagoIksGOgf0eptHN/IIk5b84LAjwYr1xY/V8e2PtCsRrIHobVQDLYHIL5ErkAbKQmkuIeiwkAAAAASUVORK5CYII=') no-repeat;
             }
         }
+        .#{$prefix}-calendar-table-group-bg{
+            height: 40px;
+        }
         .#{$prefix}-calendar-table{
-            width:$tdHeight-sm * 7;
             .#{$prefix}-calendar-titles{
                 th{
                     font-size:14px;
