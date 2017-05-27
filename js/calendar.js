@@ -1,7 +1,7 @@
 /**
  * @preserve jquery.Slwy.Calendar.js
  * @author Joe.Wu
- * @version v1.4.0
+ * @version v1.4.1
  */
 (function (root, factory) {
     if (typeof define === 'function' && define.amd) {
@@ -336,7 +336,7 @@
         this.now = new Date()
         this.viewDate = new Date() //当前面板显示时间
         this.viewDate.setDate(1)
-        this.activeDate = this.$srcElement.val() ? UTILS.getValidDate(this.$srcElement.val()) : new Date() //当前选中时间
+        this.activeDate = this.$srcElement && this.$srcElement.val() ? UTILS.getValidDate(this.$srcElement.val()) : new Date() //当前选中时间
         this.paneCount = this.opts.paneCount
         this.curPaneIndex = 0 //当前面板数量
         this.Lunar = Lunar
