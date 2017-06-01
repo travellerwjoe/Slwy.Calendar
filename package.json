@@ -1,6 +1,6 @@
 {
   "name": "jquery.slwy.calendar",
-  "version": "1.4.1",
+  "version": "1.4.2",
   "description": "slwy jquery日期插件",
   "main": "index.js",
   "scripts": {

@@ -1,7 +1,7 @@
 /**
  * @preserve jquery.Slwy.Calendar.js
  * @author Joe.Wu
- * @version v1.4.1
+ * @version v1.4.2
  */
 (function (root, factory) {
     if (typeof define === 'function' && define.amd) {
@@ -334,7 +334,7 @@
         this.$srcElement = srcElement && $(srcElement).length ? $(srcElement) : null//触发元素
 
         this.now = new Date()
-        this.viewDate = new Date() //当前面板显示时间
+        this.viewDate = this.$srcElement && this.$srcElement.val() ? new Date(this.$srcElement.val()) : new Date() //当前面板显示时间
         this.viewDate.setDate(1)
         this.activeDate = this.$srcElement && this.$srcElement.val() ? UTILS.getValidDate(this.$srcElement.val()) : new Date() //当前选中时间
         this.paneCount = this.opts.paneCount
@@ -695,7 +695,7 @@
                 this.viewDate.setMonth(this.viewDate.getMonth() + 1)
                 renderTable.call(this)
             }
-            
+
             if (this.curPaneIndex > 0 && (this.curPaneIndex % this.opts.paneCountOfGroup) === this.opts.paneCountOfGroup || this.curPaneIndex === this.paneCount) {
                 $tableGroup.append(tables)
                 tableGroups.push($tableGroup)
