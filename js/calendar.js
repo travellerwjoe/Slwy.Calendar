@@ -1,7 +1,7 @@
 /**
  * @preserve jquery.Slwy.Calendar.js
  * @author Joe.Wu
- * @version v1.4.2
+ * @version v1.4.3
  */
 (function (root, factory) {
     if (typeof define === 'function' && define.amd) {
@@ -324,7 +324,7 @@
 
 
     function Calendar(opts, srcElement) {
-        this.opts = $.extend(true, VARS.defaults, opts)
+        this.opts = $.extend(true, {}, VARS.defaults, opts)
         var template = SETTING.getTemplate()
         this.$calendar = $(template).appendTo('body')
         this.$calendarDays = this.$calendar.find('.' + VARS.className.days)
