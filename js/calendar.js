@@ -1,7 +1,7 @@
 /**
  * @preserve jquery.Slwy.Calendar.js
  * @author Joe.Wu
- * @version v1.4.3
+ * @version v1.5.0
  */
 (function (root, factory) {
     if (typeof define === 'function' && define.amd) {
@@ -220,8 +220,8 @@
 
     var UTILS = {
         //是否是页面中存在的jquery input对象
-        isJqueryInput: function (selector) {
-            return (typeof selector === 'object' && !!selector.length) || (/^[.#]{1}[\w]+$/.test(selector) && $(selector).is('input'))
+        isJqueryElement: function (selector) {
+            return (typeof selector === 'object' && !!selector.length) || (/^[.#]{1}[\w]+$/.test(selector))
         },
         //指定元素是否上是否存在指定命名空间的事件
         isEventOnNamespace: function (el, event, namespace) {
@@ -337,8 +337,8 @@
         this.viewDate = this.$srcElement && this.$srcElement.val() ? new Date(this.$srcElement.val()) : new Date() //当前面板显示时间
         this.viewDate.setDate(1)
         this.activeDate = this.$srcElement && this.$srcElement.val() ? UTILS.getValidDate(this.$srcElement.val()) : new Date() //当前选中时间
-        this.paneCount = this.opts.paneCount
-        this.curPaneIndex = 0 //当前面板数量
+        this.paneCount = this.opts.paneCount //面板数量
+        this.curPaneIndex = 0 //当前面板索引
         this.Lunar = Lunar
         this.mainFestival = $.isArray(this.opts.mainFestival) && this.opts.mainFestival.length && this.opts.mainFestival || VARS.mainFestival
         this.viewMode = $.inArray(this.opts.viewMode, VARS.modesName) >= 0 ? $.inArray(this.opts.viewMode, VARS.modesName) : 0
@@ -350,39 +350,23 @@
         this.minDate = new Date(this.yearStart, 11, 31)
         this.maxDateLimitOpts = null //动态限制的最大日期选项 {d:1,m:-1,y} || {d:true} || {ld:true}等
         this.minDateLimitOpts = null
+        this.maxDateElement = [] //maxDate或minDate规则中包含的元素
+        this.minDateElement = []
         this.size = SETTING.size[this.opts.size]
         this.weekStart = parseInt(this.opts.weekStart) >= 0 && parseInt(this.opts.weekStart) < 7 ? parseInt(this.opts.weekStart) : 0
 
         $.each(['minDate', 'maxDate'], $.proxy(function (i, date) {
-            if (this.opts[date]) {
-                var matches
-                if (typeof this.opts[date] === 'string' && (matches = this.opts[date].match(VARS.limitReg))) {
-                    var matchY = matches[1],
-                        matchM = matches[2],
-                        matchD = matches[3],
-                        y = this.now.getFullYear(),
-                        m = this.now.getMonth() + 1,
-                        d = this.now.getDate()
-                    matchY = eval(matchY.replace(/y/gi, y))
-                    matchM = eval(matchM.replace(/m/gi, m))
-                    matchD = eval(matchD.replace(/ld/gi, UTILS.getDaysOfYearMonth(y, m - 1))).toString()
-                    matchD = eval(matchD.replace(/d/gi, d))
-                    this[date] = new Date(matchY, matchM - 1, matchD)
-                } else if (typeof this.opts[date] === 'string' && (matches = this.opts[date].match(VARS.pickLimitArgReg))) {
-                    var selector = matches[2],
-                        limitOpts = eval('(' + matches[3] + ')')
-                    if (UTILS.isJqueryInput(selector)) {
-                        var $selector = $(selector),
-                            d = UTILS.getValidDate($(selector).val())
-                        this.opts[date] = $(selector)
-                        this[date] = d.valueOf() ? this.getLimitDate(UTILS.getValidDate($(selector).val()), limitOpts) : d
-                        this[date + 'LimitOpts'] = limitOpts
-                    }
-                } else if (UTILS.isJqueryInput(this.opts[date])) {
-                    this[date] = UTILS.getValidDate($(this.opts[date]).val())
-                } else {
-                    this[date] = UTILS.getValidDate(this.opts[date])
-                }
+            var optsDate = this.opts[date]
+            this[date + 'Alternative'] = []
+            if (typeof optsDate === 'string') {
+                optsDates = optsDate.split('||')
+                optsDate = optsDates[0].trim()
+                this[date + 'Alternative'] = optsDates.slice(1) //minDate或maxDate的备用，用于有多个限制条件的minDate或maxDate
+            }
+            this.setMinOrMaxDate(date, optsDate)
+            //如果minDate或maxDate为Invalid Date使用备用规则设置
+            for (var i = 0; this[date].toString() === 'Invalid Date' && this[date + 'Alternative'][i]; i++) {
+                this.setMinOrMaxDate(date, this[date + 'Alternative'][i].trim())
             }
         }, this))
 
@@ -467,18 +451,37 @@
 
         //当minDate或maxDate是另一个元素时与其交互改变可选日期
         $.each(['minDate', 'maxDate'], function (index, date) {
-            if (_this.opts[date] && UTILS.isJqueryInput(_this.opts[date])) {
-                var $date = $(_this.opts[date]),
-                    //改变与另一个日历交互的minDate和maxDate日期
-                    changeOtherDate = function (e) {
-                        if (e.type === "changeDate" && e.namespace !== 'Calendar.' + SETTING.prefix) return
-                        _this[date] = _this.getLimitDate(UTILS.getValidDate(e.date || $(this).val()), _this[date + 'LimitOpts'])
-                        _this.viewDate = _this.$srcElement && _this.$srcElement.val() ? new Date(_this.$srcElement.val()) : new Date()
-                        _this.viewDate.setDate(1)
-                        _this.activeDate = _this.$srcElement ? UTILS.getValidDate(_this.$srcElement.val()) : null
-                        _this.renderDays()
-                    }
-                $date.on(changeDateEvent, changeOtherDate).on(keyupEvent + ' ' + inputEvent, changeOtherDate)
+            //多个限制规则中可能含有多个动态元素
+            for (var i = 0; i < _this[date + 'Element'].length; i++) {
+                if (_this[date + 'Element'][i] && _this[date + 'Element'][i].length) {
+                    var $date = _this[date + 'Element'][i],
+                        //改变与另一个日历交互的minDate和maxDate日期
+                        changeOtherDate = function (e) {
+                            if (e.type === "changeDate" && e.namespace !== 'Calendar.' + SETTING.prefix) return
+                            var value = getPriorDateElementValue(e.data.index) || e.date || $(this).val() //按限制规则顺序优先获取限制规则前面元素的值，若无值则依次取后面元素的值
+                            _this[date] = _this.getLimitDate(UTILS.getValidDate(value), _this[date + 'LimitOpts'])
+                            //如果minDate或maxDate为Invalid Date使用备用规则设置
+                            for (var i = 0; _this[date].toString() === 'Invalid Date' && _this[date + 'Alternative'][i]; i++) {
+                                _this.setMinOrMaxDate(date, _this[date + 'Alternative'][i].trim())
+                            }
+
+                            _this.viewDate = _this.$srcElement && _this.$srcElement.val() ? new Date(_this.$srcElement.val()) : new Date()
+                            _this.viewDate.setDate(1)
+                            _this.activeDate = _this.$srcElement ? UTILS.getValidDate(_this.$srcElement.val()) : null
+                            _this.renderDays()
+                        },
+                        //多个限制规则中存在多个动态元素优先获取第一个存在值的元素的值
+                        getPriorDateElementValue = function (maxIndex) {
+                            for (var i = 0; i < maxIndex; i++) {
+                                if (_this[date + 'Element'][i].val()) {
+                                    return _this[date + 'Element'][i].val()
+                                }
+                            }
+                            return
+                        }
+
+                    $date.on(changeDateEvent, { index: i }, changeOtherDate).on(keyupEvent + ' ' + inputEvent, { index: i }, changeOtherDate)
+                }
             }
         })
 
@@ -910,6 +913,42 @@
             date.setYear(y + parseInt(optY))
         }
         return date
+    }
+
+    //设置最小或最大日期
+    Calendar.prototype.setMinOrMaxDate = function (date, optsDate) {
+        if (optsDate) {
+            var matches
+
+            if (typeof optsDate === 'string' && (matches = optsDate.match(VARS.limitReg))) {
+                var matchY = matches[1],
+                    matchM = matches[2],
+                    matchD = matches[3],
+                    y = this.now.getFullYear(),
+                    m = this.now.getMonth() + 1,
+                    d = this.now.getDate()
+                matchY = eval(matchY.replace(/y/gi, y))
+                matchM = eval(matchM.replace(/m/gi, m))
+                matchD = eval(matchD.replace(/ld/gi, UTILS.getDaysOfYearMonth(y, m - 1))).toString()
+                matchD = eval(matchD.replace(/d/gi, d))
+                this[date] = new Date(matchY, matchM - 1, matchD)
+            } else if (typeof optsDate === 'string' && (matches = optsDate.match(VARS.pickLimitArgReg))) {
+                var selector = matches[2],
+                    limitOpts = eval('(' + matches[3] + ')')
+                if (UTILS.isJqueryElement(selector)) {
+                    var $selector = $(selector),
+                        d = UTILS.getValidDate($(selector).val())
+                    this[date + 'Element'].push($(selector))
+                    this[date] = d.valueOf() ? this.getLimitDate(UTILS.getValidDate($(selector).val()), limitOpts) : d
+                    this[date + 'LimitOpts'] = limitOpts
+                }
+            } else if (UTILS.isJqueryElement(optsDate)) {
+                this[date] = UTILS.getValidDate($(optsDate).val())
+                this[date + 'Element'].push($(optsDate))
+            } else {
+                this[date] = UTILS.getValidDate(optsDate)
+            }
+        }
     }
 
     function Lunar(sDate) {
