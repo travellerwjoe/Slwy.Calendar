@@ -1,7 +1,7 @@
 /**
  * @preserve jquery.Slwy.Calendar.js
  * @author Joe.Wu
- * @version v1.5.0
+ * @version v1.5.1
  */
 (function (root, factory) {
     if (typeof define === 'function' && define.amd) {
@@ -334,7 +334,7 @@
         this.$srcElement = srcElement && $(srcElement).length ? $(srcElement) : null//触发元素
 
         this.now = new Date()
-        this.viewDate = this.$srcElement && this.$srcElement.val() ? new Date(this.$srcElement.val()) : new Date() //当前面板显示时间
+        this.viewDate = this.$srcElement && this.$srcElement.val() ? UTILS.getValidDate(this.$srcElement.val()) : new Date() //当前面板显示时间
         this.viewDate.setDate(1)
         this.activeDate = this.$srcElement && this.$srcElement.val() ? UTILS.getValidDate(this.$srcElement.val()) : new Date() //当前选中时间
         this.paneCount = this.opts.paneCount //面板数量
@@ -360,13 +360,13 @@
             this[date + 'Alternative'] = []
             if (typeof optsDate === 'string') {
                 optsDates = optsDate.split('||')
-                optsDate = optsDates[0].trim()
+                optsDate = $.trim(optsDates[0])
                 this[date + 'Alternative'] = optsDates.slice(1) //minDate或maxDate的备用，用于有多个限制条件的minDate或maxDate
             }
             this.setMinOrMaxDate(date, optsDate)
             //如果minDate或maxDate为Invalid Date使用备用规则设置
-            for (var i = 0; this[date].toString() === 'Invalid Date' && this[date + 'Alternative'][i]; i++) {
-                this.setMinOrMaxDate(date, this[date + 'Alternative'][i].trim())
+            for (var i = 0; !this[date].valueOf() && this[date + 'Alternative'][i]; i++) {
+                this.setMinOrMaxDate(date, $.trim(this[date + 'Alternative'][i]))
             }
         }, this))
 
@@ -461,11 +461,11 @@
                             var value = getPriorDateElementValue(e.data.index) || e.date || $(this).val() //按限制规则顺序优先获取限制规则前面元素的值，若无值则依次取后面元素的值
                             _this[date] = _this.getLimitDate(UTILS.getValidDate(value), _this[date + 'LimitOpts'])
                             //如果minDate或maxDate为Invalid Date使用备用规则设置
-                            for (var i = 0; _this[date].toString() === 'Invalid Date' && _this[date + 'Alternative'][i]; i++) {
-                                _this.setMinOrMaxDate(date, _this[date + 'Alternative'][i].trim())
+                            for (var i = 0; !_this[date].valueOf() && _this[date + 'Alternative'][i]; i++) {
+                                _this.setMinOrMaxDate(date, $.trim(_this[date + 'Alternative'][i]))
                             }
 
-                            _this.viewDate = _this.$srcElement && _this.$srcElement.val() ? new Date(_this.$srcElement.val()) : new Date()
+                            _this.viewDate = _this.$srcElement && _this.$srcElement.val() ? UTILS.getValidDate(_this.$srcElement.val()) : new Date()
                             _this.viewDate.setDate(1)
                             _this.activeDate = _this.$srcElement ? UTILS.getValidDate(_this.$srcElement.val()) : null
                             _this.renderDays()
@@ -934,7 +934,7 @@
                 this[date] = new Date(matchY, matchM - 1, matchD)
             } else if (typeof optsDate === 'string' && (matches = optsDate.match(VARS.pickLimitArgReg))) {
                 var selector = matches[2],
-                    limitOpts = eval('(' + matches[3] + ')')
+                    limitOpts = matches[3] && eval('(' + matches[3] + ')')
                 if (UTILS.isJqueryElement(selector)) {
                     var $selector = $(selector),
                         d = UTILS.getValidDate($(selector).val())
