@@ -194,3 +194,7 @@
 .Slwy-calendar .Slwy-calendar-select:hover {
   background-color: rgba(255, 255, 255, 0.2);
 }
+/* line 192, ../sass/calendar.scss */
+.Slwy-calendar .Slwy-calendar-lunar {
+  font-size: 13px;
+}

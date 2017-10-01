@@ -77,6 +77,38 @@
             }
             return tpl[tplName ? (tplName + 'Template') : 'template']
         },
+        festival: {
+            "0101": "元旦",
+            "0214": "情人节",
+            "0308": "妇女节",
+            "0312": "植树节",
+            "0315": "消费者权益日",
+            "0401": "愚人节",
+            "0501": "劳动节",
+            "0504": "青年节",
+            "0512": "护士节",
+            "0601": "儿童节",
+            "0701": "建党节",
+            "0801": "建军节",
+            "0910": "教师节",
+            "0928": "孔子诞辰",
+            "1001": "国庆节",
+            "1006": "老人节",
+            "1024": "联合国日",
+            "1224": "平安夜",
+            "1225": "圣诞节"
+        },
+        lunarFestival: {
+            "0101": "春节",
+            "0115": "元宵",
+            "0505": "端午",
+            "0707": "七夕",
+            "0715": "中元",
+            "0815": "中秋",
+            "0909": "重阳",
+            "1208": "腊八",
+            "1224": "小年"
+        },
         prefix: 'Slwy',
         yearStart: 1990,//年份开始
         yearEnd: 2050,//年份结束
@@ -167,6 +199,7 @@
             locale: 'zh_CN',//语言时区
             highlightWeek: true,//是否高亮周末
             onlyThisMonth: false,//每个面板只显示本月
+            showLunar: true,//显示农历
             paneCount: 1,//面板数量
             minDate: null,
             maxDate: null,
@@ -184,6 +217,7 @@
         this.viewDate = new Date() //当前面板显示时间
         this.activeDate = this.$srcElement ? UTILS.getValidDate(this.$srcElement.val()) : null //当前选中时间
         this.curPaneCount = 0 //当前面板数量
+        this.Lunar = this.opts.showLunar ? Lunar : null
 
         //如有触发元素隐藏日历待触发时显示
         if (this.$srcElement) {
@@ -375,6 +409,7 @@
 
             td = isShow ? '<td class="' + className + '" ' + calendarDateAttr + '>' +
                 (UTILS.isSameDay(prevMonthDate, nowDate) ? SETTING.locales[this.opts.locale].today : prevD) +
+                (this.opts.showLunar ? this.getLunarAndFestival(prevMonthDate) : '') +
                 '</td>' : '<td></td>'
 
             tr += td
@@ -421,6 +456,19 @@
 
     }
 
+    Calendar.prototype.getLunarAndFestival = function (date) {
+        var lunar = new this.Lunar(date),
+            className = SETTING.prefix + '-calendar-lunar',
+            sMonthDay = UTILS.formatDateTime(date, 'MMdd'),
+            lMonthDay = (lunar.month < 10 ? '0' + lunar.month : lunar.month) + (lunar.day < 10 ? '0' + lunar.day : lunar.day),
+            sFestival = SETTING.festival[sMonthDay],
+            lFestival = SETTING.lunarFestival[lMonthDay],
+            lDay = lunar.cDay,
+            sTerm = lunar.sTerm,
+            str = sFestival || lFestival || sTerm || lDay
+        return '<div class="' + className + '">' + str + '</div>'
+    }
+
     Calendar.prototype.resetCalendarStyle = function () {
         var $table = this.$calender.find('table'),
             tableWidth = $table.width(),
@@ -449,6 +497,118 @@
     Calendar.prototype.close = function () {
         this.$calender.hide()
     }
+
+    var lunarInfo = new Array(
+        0x04bd8, 0x04ae0, 0x0a570, 0x054d5, 0x0d260, 0x0d950, 0x16554, 0x056a0, 0x09ad0, 0x055d2,
+        0x04ae0, 0x0a5b6, 0x0a4d0, 0x0d250, 0x1d255, 0x0b540, 0x0d6a0, 0x0ada2, 0x095b0, 0x14977,
+        0x04970, 0x0a4b0, 0x0b4b5, 0x06a50, 0x06d40, 0x1ab54, 0x02b60, 0x09570, 0x052f2, 0x04970,
+        0x06566, 0x0d4a0, 0x0ea50, 0x06e95, 0x05ad0, 0x02b60, 0x186e3, 0x092e0, 0x1c8d7, 0x0c950,
+        0x0d4a0, 0x1d8a6, 0x0b550, 0x056a0, 0x1a5b4, 0x025d0, 0x092d0, 0x0d2b2, 0x0a950, 0x0b557,
+        0x06ca0, 0x0b550, 0x15355, 0x04da0, 0x0a5d0, 0x14573, 0x052d0, 0x0a9a8, 0x0e950, 0x06aa0,
+        0x0aea6, 0x0ab50, 0x04b60, 0x0aae4, 0x0a570, 0x05260, 0x0f263, 0x0d950, 0x05b57, 0x056a0,
+        0x096d0, 0x04dd5, 0x04ad0, 0x0a4d0, 0x0d4d4, 0x0d250, 0x0d558, 0x0b540, 0x0b5a0, 0x195a6,
+        0x095b0, 0x049b0, 0x0a974, 0x0a4b0, 0x0b27a, 0x06a50, 0x06d40, 0x0af46, 0x0ab60, 0x09570,
+        0x04af5, 0x04970, 0x064b0, 0x074a3, 0x0ea50, 0x06b58, 0x055c0, 0x0ab60, 0x096d5, 0x092e0,
+        0x0c960, 0x0d954, 0x0d4a0, 0x0da50, 0x07552, 0x056a0, 0x0abb7, 0x025d0, 0x092d0, 0x0cab5,
+        0x0a950, 0x0b4a0, 0x0baa4, 0x0ad50, 0x055d9, 0x04ba0, 0x0a5b0, 0x15176, 0x052b0, 0x0a930,
+        0x07954, 0x06aa0, 0x0ad50, 0x05b52, 0x04b60, 0x0a6e6, 0x0a4e0, 0x0d260, 0x0ea65, 0x0d530,
+        0x05aa0, 0x076a3, 0x096d0, 0x04bd7, 0x04ad0, 0x0a4d0, 0x1d0b6, 0x0d250, 0x0d520, 0x0dd45,
+        0x0b5a0, 0x056d0, 0x055b2, 0x049b0, 0x0a577, 0x0a4b0, 0x0aa50, 0x1b255, 0x06d20, 0x0ada0)
+
+    var solarTerms = new Array("小寒", "大寒", "立春", "雨水", "惊蛰", "春分", "清明", "谷雨", "立夏", "小满", "芒种", "夏至", "小暑", "大暑", "立秋", "处暑", "白露", "秋分", "寒露", "霜降", "立冬", "小雪", "大雪", "冬至");
+
+    var solarTermsInfo = new Array(0, 21208, 42467, 63836, 85337, 107014, 128867, 150921, 173149, 195551, 218072, 240693, 263343, 285989, 308563, 331033, 353350, 375494, 397447, 419210, 440795, 462224, 483532, 504758);
+
+    var cDays = new Array('十', '一', '二', '三', '四', '五', '六', '七', '八', '九');
+    var cDays2 = new Array('初', '十', '廿', '三');
+
+
+
+    var LUNAR = {
+        //返回农历year年的总天数
+        getLunarDaysByYear: function (year) {
+            var i, sum = 348;
+            for (i = 0x8000; i > 0x8; i >>= 1)
+                sum += (lunarInfo[year - 1900] & i) ? 1 : 0;
+            return (sum + this.getLunarLeapDaysByYear(year));
+        },
+        //返回农历year年闰月的天数
+        getLunarLeapDaysByYear: function (year) {
+            if (this.getLunarLeapMonthByYear(year)) return ((lunarInfo[year - 1900] & 0x10000) ? 30 : 29);
+            else return (0);
+        },
+        //返回农历year年闰几月，不闰返回0
+        getLunarLeapMonthByYear: function (year) {
+            return (lunarInfo[year - 1900] & 0xf);
+        },
+        //返回农历year年month月的总天数
+        getLunarDaysByYearMonth: function (year, month) {
+            return ((lunarInfo[year - 1900] & (0x10000 >> month)) ? 30 : 29);
+        },
+        //返回中文农历日期
+        getChineseLunarDay: function (day) {
+            var str = cDays2[Math.floor(day / (day <= 10 ? 11 : 10))];
+            str += cDays[day % 10];
+            return str
+        },
+        //返回year年的第n个节气为几日(从0小寒起算)
+        getSolarTermDay: function (year, n) {
+            var offDate = new Date((31556925974.7 * (year - 1900) + solarTermsInfo[n] * 60000) + Date.UTC(1900, 0, 6, 2, 5));
+            return (offDate.getUTCDate())
+        }
+    }
+
+    function Lunar(sDate) {
+        var i,
+            leap = 0,
+            temp = 0,
+            baseDate = new Date(1900, 0, 31),
+            offset = (sDate - baseDate) / 86400000;
+
+        this.dayCyl = offset + 40;
+        this.monCyl = 14;
+        for (i = 1900; i < 2050 && offset > 0; i++) {
+            temp = LUNAR.getLunarDaysByYear(i)
+            offset -= temp;
+            this.monCyl += 12;
+        }
+        if (offset < 0) {
+            offset += temp;
+            i--;
+            this.monCyl -= 12;
+        }
+        this.year = i;
+        this.yearCyl = i - 1864;
+        leap = LUNAR.getLunarLeapMonthByYear(i); //闰哪个月
+        this.isLeap = false;
+        for (i = 1; i < 13 && offset > 0; i++) {
+            if (leap > 0 && i == (leap + 1) && this.isLeap == false) {	//闰月
+                --i; this.isLeap = true; temp = LUNAR.getLunarLeapDaysByYear(this.year);
+            }
+            else {
+                temp = LUNAR.getLunarDaysByYearMonth(this.year, i);
+            }
+            if (this.isLeap == true && i == (leap + 1)) this.isLeap = false;	//解除闰月
+            offset -= temp;
+            if (this.isLeap == false) this.monCyl++;
+        }
+        if (offset == 0 && leap > 0 && i == leap + 1)
+            if (this.isLeap) { this.isLeap = false; }
+            else { this.isLeap = true; --i; --this.monCyl; }
+        if (offset < 0) { offset += temp; --i; --this.monCyl; }
+        this.month = i;
+        this.day = offset + 1;
+        this.cDay = LUNAR.getChineseLunarDay(this.day)
+        this.sTermDay1 = LUNAR.getSolarTermDay(sDate.getFullYear(), sDate.getMonth() * 2)
+        this.sTermDay2 = LUNAR.getSolarTermDay(sDate.getFullYear(), sDate.getMonth() * 2 + 1)
+        this.sTerm = ''
+        if (sDate.getDate() === this.sTermDay1) {
+            this.sTerm = solarTerms[sDate.getMonth() * 2]
+        } else if (sDate.getDate() === this.sTermDay2) {
+            this.sTerm = solarTerms[sDate.getMonth() * 2 + 1]
+        }
+    }
+
 
     $.fn.SlwyCalendar = function (options) {
         new Calendar(options, $(this))
