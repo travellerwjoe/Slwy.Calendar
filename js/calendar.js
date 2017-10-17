@@ -183,6 +183,7 @@
             keyupEvent: 'keyup.' + SETTING.prefix + '.Calendar',
             keydownEvent: 'keydown.' + SETTING.prefix + '.Calendar',
             inputEvent: 'input.' + SETTING.prefix + '.Calendar',
+            changeEvent: 'change.' + SETTING.prefix + '.Calendar',
             changeDateEvent: 'changeDate.' + SETTING.prefix + '.Calendar'
         },
         className: {
@@ -401,6 +402,7 @@
             keyupEvent = VARS.events.keyupEvent,
             keydownEvent = VARS.events.keydownEvent,
             inputEvent = VARS.events.inputEvent,
+            changeEvent = VARS.events.changeEvent,
             changeDateEvent = VARS.events.changeDateEvent
 
         //检查绑定控件的值是否是有效的可选日期，满足lte maxData && gte minDate
@@ -416,7 +418,7 @@
         }
 
         if (this.$srcElement) {
-            this.$srcElement.on(keyupEvent, function () {
+            this.$srcElement.on(keyupEvent + ' ' + changeEvent, function () {
                 var val = $(this).val(),
                     date
                 // if (!val) return
@@ -480,7 +482,7 @@
                             return
                         }
 
-                    $date.on(changeDateEvent, { index: i }, changeOtherDate).on(keyupEvent + ' ' + inputEvent, { index: i }, changeOtherDate)
+                    $date.on(changeDateEvent, { index: i }, changeOtherDate).on(keyupEvent + ' ' + inputEvent + ' ' + changeEvent, { index: i }, changeOtherDate)
                 }
             }
         })
