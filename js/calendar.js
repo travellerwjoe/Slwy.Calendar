@@ -1,7 +1,7 @@
 /**
  * @preserve jquery.Slwy.Calendar.js
  * @author Joe.Wu
- * @version v1.5.1
+ * @version v1.5.3
  */
 (function (root, factory) {
     if (typeof define === 'function' && define.amd) {
@@ -110,7 +110,7 @@
             onChangeDate: null,
             viewMode: 'days',
             minViewMode: 'days',
-            theme: null,
+            theme: 'THEME_CUTE',
             invalidTips: '该日期不可选',
             size: null,//日历大小，sm 与 默认
             caret: true,

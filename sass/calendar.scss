@@ -181,6 +181,7 @@ $tableMargin:20px;
     }
     .#{$prefix}-calendar-day{
         cursor: pointer;
+        border:1px solid #eee;
         &.#{$prefix}-calendar-day-active{
             color:#fff!important;
             position: relative;
@@ -293,7 +294,6 @@ $tableMargin:20px;
                 }
             }
             td{
-                border:1px solid #eee;
                 &.#{$prefix}-calendar-disabled{
                     background-color: #fafafa;
                 }
@@ -328,7 +328,6 @@ $tableMargin:20px;
 
     &.#{$theme-cute-noborder}{
         .#{$prefix}-calendar-table{
-            width:$tdWidth-sm * 7;
             td{
                 border:0;
                 &.#{$prefix}-calendar-disabled{
@@ -360,6 +359,7 @@ $tableMargin:20px;
             height: 40px;
         }
         .#{$prefix}-calendar-table{
+            width:$tdWidth-sm * 7;
             .#{$prefix}-calendar-titles{
                 th{
                     font-size:14px;
