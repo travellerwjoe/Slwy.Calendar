@@ -400,7 +400,7 @@ $('#date').SlwyCalendar({
 })
 ```
 
-> 也可通过为绑定的input元素使用`.on`监听[changeDate事件](event.md)
+> 也可通过为绑定的input元素使用`.on`监听[changeDate事件](#changedate事件-docsify-ignore)
 
 
 
@@ -409,7 +409,7 @@ $('#date').SlwyCalendar({
 * 默认： `null`
 * 值：`'2017-12-12'` || `'#date2'` || `new Date()` || `$('#date2')` || `'${"date2"} || ${"date2",{ld:true}} || ${y}-${m+1}-${ld}'` 等
 
-设置选择的日期范围，可与选项`maxDate`配合使用，可传入多种类型规则，具体规则介绍查看[日期范围限制](limit.md)
+设置选择的日期范围，可与选项`maxDate`配合使用，可传入多种类型规则，具体规则介绍查看[日期范围限制](#日期范围限制)
 
 ```js
 $('#date').SlwyCalendar({
@@ -431,7 +431,7 @@ $('#date').SlwyCalendar({
 * 默认： `null`
 * 值：`'2017-12-12'` || `'#date2'` || `new Date()` || `$('#date2')` || `'${"date2"} || ${"date2",{ld:true}} || ${y}-${m+1}-${ld}'` 等
 
-设置选择的日期范围，可与选项`minDate`配合使用，可传入多种类型规则，具体规则介绍查看[日期范围限制](limit.md)
+设置选择的日期范围，可与选项`minDate`配合使用，可传入多种类型规则，具体规则介绍查看[日期范围限制](#日期范围限制)
 
 ```js
 $('#date').SlwyCalendar({
@@ -613,7 +613,7 @@ $('#date')
     })
 ```
 
-> 同样也可以传入[选项onChangeDate](/options?id=onchangedate-日期选择事件)来触发事件
+> 同样也可以传入[选项onChangeDate](#onchangedate-日期选择事件)来触发事件
 
 
 # 替换默认配置
