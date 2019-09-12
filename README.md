@@ -1,7 +1,6 @@
 # Slwy-Calendar
-商旅无忧日期插件
 
-![商旅无忧首页](./docs/imgs/slwy-home.jpg)
+![预览](./docs/imgs/preview.jpg)
 
 
 # 使用
